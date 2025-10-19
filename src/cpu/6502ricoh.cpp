@@ -16,7 +16,18 @@ void CPU::reset()
     NMI = IRQ = RESET = false;
 }
 
-void CPU::clock() {}
+void CPU::clock()
+{
+    if (cycles == 0)
+    {
+        uint8_t opcode = bus->read(pc);
+        Instruction &instr = table[opcode];
+
+        (this->*instr.execute)();
+        cycles = instr.cycles;
+    }
+    cycles--;
+}
 void CPU::connectBus(Bus *b)
 {
     bus = b;
