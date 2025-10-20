@@ -40,6 +40,8 @@ public:
     Instruction table[256];
     CPU()
     {
+        table[0xEA] = {"NOP", &CPU::nop, AddressingMode::IMMEDIATE, 2};
+
         table[0xA9] = {"LDA", &CPU::ldaImmediate, AddressingMode::IMMEDIATE, 2};
         table[0xA5] = {"LDA", &CPU::ldaZeroPage, AddressingMode::ZERO_PAGE, 3};
         table[0xB5] = {"LDA", &CPU::ldaZeroPageX, AddressingMode::ZERO_PAGE_X, 4};
@@ -72,6 +74,8 @@ public:
     void reset();
     void clock();
     void connectBus(Bus *b);
+
+    void nop();
 
     void ldaImmediate();
     void ldaZeroPage();

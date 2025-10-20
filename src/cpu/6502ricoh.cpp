@@ -15,6 +15,10 @@ void CPU::reset()
     opState = 0;
     NMI = IRQ = RESET = false;
 }
+void CPU::nop()
+{
+    pc++;
+}
 void CPU::ldaImmediate()
 {
     uint8_t value = bus->read(pc++);
