@@ -48,6 +48,21 @@ public:
         table[0xB9] = {"LDA", &CPU::ldaAbsoluteY, AddressingMode::ABSOLUTE_Y, 4};
         table[0xA1] = {"LDA", &CPU::ldaIndexedIndirect, AddressingMode::INDEXED_INDIRECT, 6};
         table[0xB1] = {"LDA", &CPU::ldaIndirectIndexed, AddressingMode::INDIRECT_INDEXED, 5};
+
+        table[0x85] = {"STA", &CPU::staZeroPage, AddressingMode::ZERO_PAGE, 3};
+        table[0x95] = {"STA", &CPU::staZeroPageX, AddressingMode::ZERO_PAGE_X, 4};
+        table[0x8D] = {"STA", &CPU::staAbsolute, AddressingMode::ABSOLUTE, 4};
+        table[0x9D] = {"STA", &CPU::staAbsoluteX, AddressingMode::ABSOLUTE_X, 5};
+        table[0x99] = {"STA", &CPU::staAbsoluteY, AddressingMode::ABSOLUTE_Y, 5};
+        table[0x81] = {"STA", &CPU::staIndexedIndirect, AddressingMode::INDEXED_INDIRECT, 6};
+        table[0x91] = {"STA", &CPU::staIndirectIndexed, AddressingMode::INDIRECT_INDEXED, 6};
+
+        table[0xAA] = {"TAX", &CPU::tax, AddressingMode::IMPLIED, 2};
+        table[0xA8] = {"TAY", &CPU::tay, AddressingMode::IMPLIED, 2};
+        table[0x8A] = {"TXA", &CPU::txa, AddressingMode::IMPLIED, 2};
+        table[0x98] = {"TYA", &CPU::tya, AddressingMode::IMPLIED, 2};
+        table[0xBA] = {"TSX", &CPU::tsx, AddressingMode::IMPLIED, 2};
+        table[0x9A] = {"TXS", &CPU::txs, AddressingMode::IMPLIED, 2};
     };
     uint8_t dataBus, A, X, Y, P, sp, cycles, opState;
     uint16_t pc;
@@ -66,4 +81,19 @@ public:
     void ldaAbsoluteY();
     void ldaIndexedIndirect();
     void ldaIndirectIndexed();
+
+    void staZeroPage();
+    void staZeroPageX();
+    void staAbsolute();
+    void staAbsoluteX();
+    void staAbsoluteY();
+    void staIndexedIndirect();
+    void staIndirectIndexed();
+
+    void tax();
+    void tay();
+    void txa();
+    void tya();
+    void tsx();
+    void txs();
 };

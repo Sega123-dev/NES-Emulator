@@ -15,7 +15,6 @@ void CPU::reset()
     opState = 0;
     NMI = IRQ = RESET = false;
 }
-
 void CPU::ldaImmediate()
 {
     uint8_t value = bus->read(pc++);
@@ -30,7 +29,6 @@ void CPU::ldaImmediate()
     else
         P &= ~0x02;
 }
-
 void CPU::ldaZeroPage()
 {
     uint8_t address = bus->read(pc++);
@@ -47,7 +45,6 @@ void CPU::ldaZeroPage()
     else
         P &= ~0x02;
 }
-
 void CPU::ldaZeroPageX()
 {
     uint8_t address = bus->read(pc++);
@@ -65,7 +62,6 @@ void CPU::ldaZeroPageX()
     else
         P &= ~0x02;
 }
-
 void CPU::ldaAbsolute()
 {
     uint8_t lowByte = bus->read(pc++);
@@ -107,7 +103,6 @@ void CPU::ldaAbsoluteX()
     else
         P &= ~0x02;
 }
-
 void CPU::ldaAbsoluteY()
 {
     uint8_t lowByte = bus->read(pc++);
@@ -130,7 +125,6 @@ void CPU::ldaAbsoluteY()
     else
         P &= ~0x02;
 }
-
 void CPU::ldaIndexedIndirect()
 {
     uint8_t address = bus->read(pc++);
@@ -167,6 +161,70 @@ void CPU::ldaIndirectIndexed()
     else
         P &= ~0x02;
 }
+void CPU::tax()
+{
+    X = A;
+    if (X == 0)
+        P |= 0x02;
+    else
+        P &= ~0x02;
+    if ((X & 0x80) != 0)
+        P |= 0x80;
+    else
+        P &= ~0x80;
+}
+void CPU::tay()
+{
+    Y = A;
+    if (Y == 0)
+        P |= 0x02;
+    else
+        P &= ~0x02;
+    if ((Y & 0x80) != 0)
+        P |= 0x80;
+    else
+        P &= ~0x80;
+}
+void CPU::txa()
+{
+    A = X;
+    if (A == 0)
+        P |= 0x02;
+    else
+        P &= ~0x02;
+    if ((A & 0x80) != 0)
+        P |= 0x80;
+    else
+        P &= ~0x80;
+}
+void CPU::tya()
+{
+    A = Y;
+    if (A == 0)
+        P |= 0x02;
+    else
+        P &= ~0x02;
+    if ((A & 0x80) != 0)
+        P |= 0x80;
+    else
+        P &= ~0x80;
+}
+void CPU::tsx()
+{
+    X = sp;
+    if (X == 0)
+        P |= 0x02;
+    else
+        P &= ~0x02;
+    if ((X & 0x80) != 0)
+        P |= 0x80;
+    else
+        P &= ~0x80;
+}
+void CPU::txs()
+{
+    sp = X;
+}
 void CPU::clock()
 {
     if (cycles == 0)
@@ -179,6 +237,7 @@ void CPU::clock()
     }
     cycles--;
 }
+
 void CPU::connectBus(Bus *b)
 {
     bus = b;
