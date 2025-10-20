@@ -47,6 +47,34 @@ void CPU::iny()
     else
         P &= ~0x80;
 }
+void CPU::dex()
+{
+    X--;
+
+    if (X == 0)
+        P |= 0x02;
+    else
+        P &= ~0x02;
+
+    if (X & 0x80)
+        P |= 0x80;
+    else
+        P &= ~0x80;
+}
+void CPU::dey()
+{
+    Y--;
+
+    if (Y == 0)
+        P |= 0x02;
+    else
+        P &= ~0x02;
+
+    if (Y & 0x80)
+        P |= 0x80;
+    else
+        P &= ~0x80;
+}
 void CPU::ldaImmediate()
 {
     uint8_t value = bus->read(pc++);

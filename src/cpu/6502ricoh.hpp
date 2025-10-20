@@ -45,6 +45,9 @@ public:
         table[0xE8] = {"INX", &CPU::inx, AddressingMode::IMPLIED, 2};
         table[0xC8] = {"INY", &CPU::iny, AddressingMode::IMPLIED, 2};
 
+        table[0xCA] = {"DEX", &CPU::dex, AddressingMode::IMPLIED, 2};
+        table[0x88] = {"DEY", &CPU::dey, AddressingMode::IMPLIED, 2};
+
         table[0xA9] = {"LDA", &CPU::ldaImmediate, AddressingMode::IMMEDIATE, 2};
         table[0xA5] = {"LDA", &CPU::ldaZeroPage, AddressingMode::ZERO_PAGE, 3};
         table[0xB5] = {"LDA", &CPU::ldaZeroPageX, AddressingMode::ZERO_PAGE_X, 4};
@@ -82,6 +85,9 @@ public:
 
     void inx();
     void iny();
+
+    void dex();
+    void dey();
 
     void ldaImmediate();
     void ldaZeroPage();
