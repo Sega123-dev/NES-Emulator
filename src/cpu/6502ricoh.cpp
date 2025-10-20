@@ -161,6 +161,63 @@ void CPU::ldaIndirectIndexed()
     else
         P &= ~0x02;
 }
+void CPU::staAbsolute()
+{
+    uint8_t lowByte = bus->read(pc);
+    uint8_t highByte = bus->read(pc + 1);
+    uint16_t finalAddress = (highByte << 8) | lowByte;
+    pc += 2;
+    bus->write(finalAddress, A);
+}
+void CPU::staAbsoluteX()
+{
+    uint8_t lowByte = bus->read(pc);
+    uint8_t highByte = bus->read(pc + 1);
+    uint16_t finalAddress = (highByte << 8) | lowByte;
+    pc += 2;
+    bus->write(finalAddress + X, A);
+}
+void CPU::staAbsoluteY()
+{
+    uint8_t lowByte = bus->read(pc);
+    uint8_t highByte = bus->read(pc + 1);
+    uint16_t finalAddress = (highByte << 8) | lowByte;
+    pc += 2;
+    bus->write(finalAddress + Y, A);
+}
+void CPU::staZeroPage()
+{
+    uint8_t address = bus->read(pc);
+    pc += 1;
+    bus->write(address, A);
+}
+void CPU::staZeroPageX()
+{
+    uint8_t address = bus->read(pc);
+    pc += 1;
+    bus->write((address + X) & 0xFF, A);
+}
+void CPU::staIndexedIndirect()
+{
+    uint8_t baseAddress = bus->read(pc);
+    pc += 1;
+    uint16_t ptr = (baseAddress + X) & 0xFF;
+    uint8_t lowByte = bus->read(ptr);
+    uint8_t highByte = bus->read((ptr + 1) & 0xFF);
+    uint16_t finalAddress = (highByte << 8) | lowByte;
+
+    bus->write(finalAddress, A);
+}
+void CPU::staIndirectIndexed()
+{
+    uint8_t baseAddress = bus->read(pc);
+    pc += 1;
+    uint8_t lowByte = bus->read(baseAddress);
+    uint8_t highByte = bus->read((baseAddress + 1) & 0xFF);
+    uint16_t finalAddress = (highByte << 8) | lowByte;
+    finalAddress += Y;
+    bus->write(finalAddress, A);
+}
 void CPU::tax()
 {
     X = A;
