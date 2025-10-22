@@ -75,6 +75,26 @@ void CPU::dey()
     else
         P &= ~0x80;
 }
+void CPU::clc()
+{
+    P &= ~0x01;
+}
+void CPU::sec()
+{
+    P |= 0x01;
+}
+void CPU::cld()
+{
+    P &= ~0x08;
+}
+void CPU::cli()
+{
+    P &= ~0x04;
+}
+void CPU::sei()
+{
+    P |= 0x04;
+}
 void CPU::ldaImmediate()
 {
     uint8_t value = bus->read(pc++);
