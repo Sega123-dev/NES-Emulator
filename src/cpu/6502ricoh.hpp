@@ -48,6 +48,14 @@ public:
         table[0xCA] = {"DEX", &CPU::dex, AddressingMode::IMPLIED, 2};
         table[0x88] = {"DEY", &CPU::dey, AddressingMode::IMPLIED, 2};
 
+        table[0x18] = {"CLC", &CPU::clc, AddressingMode::IMPLIED, 2};
+        table[0x38] = {"SEC", &CPU::sec, AddressingMode::IMPLIED, 2};
+
+        table[0xD8] = {"CLD", &CPU::cld, AddressingMode::IMPLIED, 2};
+
+        table[0x78] = {"SEI", &CPU::sei, AddressingMode::IMPLIED, 2};
+        table[0x58] = {"CLI", &CPU::cli, AddressingMode::IMPLIED, 2};
+
         table[0xA9] = {"LDA", &CPU::ldaImmediate, AddressingMode::IMMEDIATE, 2};
         table[0xA5] = {"LDA", &CPU::ldaZeroPage, AddressingMode::ZERO_PAGE, 3};
         table[0xB5] = {"LDA", &CPU::ldaZeroPageX, AddressingMode::ZERO_PAGE_X, 4};
@@ -88,6 +96,14 @@ public:
 
     void dex();
     void dey();
+
+    void clc();
+    void sec();
+
+    void cld();
+
+    void sei();
+    void cli();
 
     void ldaImmediate();
     void ldaZeroPage();
