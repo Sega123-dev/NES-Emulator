@@ -389,6 +389,24 @@ void CPU::jmpIndirect()
     pc = finalAddress;
 }
 
+void CPU::jsrAbsolute()
+{
+
+    uint8_t lowByte = bus->read(pc);
+    uint8_t highByte = bus->read(pc + 1);
+    uint16_t subAddress = (highByte << 8) | lowByte;
+
+    uint16_t returnAddress = pc + 2 - 1;
+
+    bus->write(0x0100 + sp, (returnAddress >> 8) & 0xFF);
+    sp--;
+
+    bus->write(0x0100 + sp, returnAddress & 0xFF);
+    sp--;
+
+    pc = subAddress;
+}
+
 void CPU::clock()
 {
     if (cycles == 0)
