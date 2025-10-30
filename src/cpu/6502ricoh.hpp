@@ -87,7 +87,7 @@ public:
         table[0x6C] = {"JMP", &CPU::jmpIndirect, AddressingMode::INDIRECT, 5};
 
         table[0x20] = {"JSR", &CPU::jsrAbsolute, AddressingMode::ABSOLUTE, 6};
-        table[0x60] = {"RTS", &CPU::rts, AddressingMode::IMMEDIATE};
+        table[0x60] = {"RTS", &CPU::rts, AddressingMode::IMPLIED};
     };
     uint8_t dataBus, A, X, Y, P, sp, cycles, opState;
     uint16_t pc;

@@ -407,6 +407,18 @@ void CPU::jsrAbsolute()
     pc = subAddress;
 }
 
+void CPU::rts()
+{
+    sp++;
+    uint8_t lowByte = bus->read(0x0100 + sp);
+    sp++;
+    uint8_t highByte = bus->read(0x0100 + sp);
+
+    uint16_t subAddress = (highByte << 8) | lowByte;
+
+    pc = subAddress + 1;
+}
+
 void CPU::clock()
 {
     if (cycles == 0)
