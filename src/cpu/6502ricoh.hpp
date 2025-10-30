@@ -56,6 +56,9 @@ public:
         table[0x78] = {"SEI", &CPU::sei, AddressingMode::IMPLIED, 2};
         table[0x58] = {"CLI", &CPU::cli, AddressingMode::IMPLIED, 2};
 
+        table[0x78] = {"SEI", &CPU::sei, AddressingMode::IMPLIED, 2};
+        table[0x58] = {"CLI", &CPU::cli, AddressingMode::IMPLIED, 2};
+
         table[0xA9] = {"LDA", &CPU::ldaImmediate, AddressingMode::IMMEDIATE, 2};
         table[0xA5] = {"LDA", &CPU::ldaZeroPage, AddressingMode::ZERO_PAGE, 3};
         table[0xB5] = {"LDA", &CPU::ldaZeroPageX, AddressingMode::ZERO_PAGE_X, 4};
@@ -79,6 +82,9 @@ public:
         table[0x98] = {"TYA", &CPU::tya, AddressingMode::IMPLIED, 2};
         table[0xBA] = {"TSX", &CPU::tsx, AddressingMode::IMPLIED, 2};
         table[0x9A] = {"TXS", &CPU::txs, AddressingMode::IMPLIED, 2};
+
+        table[0x4C] = {"JMP", &CPU::jmpAbsolute, AddressingMode::ABSOLUTE, 3};
+        table[0x6C] = {"JMP", &CPU::jmpIndirect, AddressingMode::INDIRECT, 5};
     };
     uint8_t dataBus, A, X, Y, P, sp, cycles, opState;
     uint16_t pc;
@@ -128,4 +134,7 @@ public:
     void tya();
     void tsx();
     void txs();
+
+    void jmpAbsolute();
+    void jmpIndirect();
 };

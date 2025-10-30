@@ -156,5 +156,6 @@
     "typeinfo": "cpp",
     "valarray": "cpp",
     "variant": "cpp"
-  }
+  },
+  "editor.fontFamily": "Monocraft"
 }

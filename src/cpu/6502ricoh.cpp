@@ -362,6 +362,33 @@ void CPU::txs()
 {
     sp = X;
 }
+
+void CPU::jmpAbsolute()
+{
+    uint8_t lowByte = bus->read(pc);
+    uint8_t highByte = bus->read(pc + 1);
+    uint16_t finalAddress = (highByte << 8) | lowByte;
+
+    pc = finalAddress;
+}
+
+void CPU::jmpIndirect()
+{
+    uint8_t ptrLowByte = bus->read(pc);
+    uint8_t ptrHighByte = bus->read(pc + 1);
+    uint16_t finalPtr = (ptrHighByte << 8) | ptrLowByte;
+
+    uint8_t lowByte = bus->read(finalPtr);
+    uint8_t highByte = bus->read(finalPtr + 1);
+    if (ptrLowByte == 0xFF)
+    {
+        highByte = bus->read(finalPtr & 0xFF00);
+    }
+    uint16_t finalAddress = ((highByte << 8) | lowByte);
+
+    pc = finalAddress;
+}
+
 void CPU::clock()
 {
     if (cycles == 0)
