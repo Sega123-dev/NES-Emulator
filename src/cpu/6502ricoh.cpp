@@ -418,6 +418,11 @@ void CPU::pla()
     else
         P &= ~0x80;
 }
+void CPU::php()
+{
+    bus->write(0x0100 + sp, P | 0x30);
+    sp--;
+}
 void CPU::jmpAbsolute()
 {
     uint8_t lowByte = bus->read(pc);
