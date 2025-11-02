@@ -40,6 +40,7 @@ public:
     Instruction table[256];
     CPU()
     {
+        table[0x00] = {"BRK", &CPU::brk, AddressingMode::IMPLIED, 7};
         table[0xEA] = {"NOP", &CPU::nop, AddressingMode::IMPLIED, 2};
 
         table[0xE8] = {"INX", &CPU::inx, AddressingMode::IMPLIED, 2};
@@ -98,6 +99,7 @@ public:
     void clock();
     void connectBus(Bus *b);
 
+    void brk();
     void nop();
 
     void inx();

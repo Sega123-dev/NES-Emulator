@@ -15,6 +15,26 @@ void CPU::reset()
     opState = 0;
     NMI = IRQ = RESET = false;
 }
+void CPU::brk()
+{
+    pc++;
+
+    bus->write(0x0100 + sp, (pc >> 8) & 0xFF);
+    sp--;
+
+    bus->write(0x0100 + sp, pc & 0xFF);
+    sp--;
+
+    P |= 0x30;
+    bus->write(0x0100 + sp, P);
+    sp--;
+
+    P |= 0x04;
+
+    uint8_t lowByte = bus->read(0xFFFE);
+    uint8_t highByte = bus->read(0xFFFF);
+    pc = (highByte << 8) | lowByte;
+}
 void CPU::nop()
 {
     pc++;
