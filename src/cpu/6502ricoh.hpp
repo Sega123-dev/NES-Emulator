@@ -42,6 +42,7 @@ public:
     {
         table[0x00] = {"BRK", &CPU::brk, AddressingMode::IMPLIED, 7};
         table[0xEA] = {"NOP", &CPU::nop, AddressingMode::IMPLIED, 2};
+        table[0x40] = {"RTI", &CPU::rti, AddressingMode::IMPLIED, 6};
 
         table[0xE8] = {"INX", &CPU::inx, AddressingMode::IMPLIED, 2};
         table[0xC8] = {"INY", &CPU::iny, AddressingMode::IMPLIED, 2};
@@ -101,6 +102,7 @@ public:
 
     void brk();
     void nop();
+    void rti();
 
     void inx();
     void iny();

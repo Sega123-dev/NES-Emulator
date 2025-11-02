@@ -39,6 +39,22 @@ void CPU::nop()
 {
     pc++;
 }
+void CPU::rti()
+{
+    sp++;
+    P = bus->read(0x0100 + sp);
+
+    P &= ~0x10;
+    P |= 0x20;
+
+    sp++;
+    uint8_t lowByte = bus->read(0x0100 + sp);
+    sp++;
+    uint8_t highByte = bus->read(0x0100 + sp);
+
+    uint16_t subAddress = (highByte << 8) | lowByte;
+    pc = subAddress;
+}
 void CPU::inx()
 {
     X++;
@@ -382,7 +398,6 @@ void CPU::txs()
 {
     sp = X;
 }
-
 void CPU::jmpAbsolute()
 {
     uint8_t lowByte = bus->read(pc);
@@ -391,7 +406,6 @@ void CPU::jmpAbsolute()
 
     pc = finalAddress;
 }
-
 void CPU::jmpIndirect()
 {
     uint8_t ptrLowByte = bus->read(pc);
@@ -408,7 +422,6 @@ void CPU::jmpIndirect()
 
     pc = finalAddress;
 }
-
 void CPU::jsrAbsolute()
 {
 
@@ -426,7 +439,6 @@ void CPU::jsrAbsolute()
 
     pc = subAddress;
 }
-
 void CPU::rts()
 {
     sp++;
@@ -438,7 +450,6 @@ void CPU::rts()
 
     pc = subAddress + 1;
 }
-
 void CPU::clock()
 {
     if (cycles == 0)
@@ -451,7 +462,6 @@ void CPU::clock()
     }
     cycles--;
 }
-
 void CPU::connectBus(Bus *b)
 {
     bus = b;
