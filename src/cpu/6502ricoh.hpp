@@ -89,6 +89,7 @@ public:
         table[0x48] = {"PHA", &CPU::pha, AddressingMode::IMPLIED, 3};
         table[0x68] = {"PLA", &CPU::pla, AddressingMode::IMPLIED, 4};
         table[0x08] = {"PHP", &CPU::php, AddressingMode::IMPLIED, 3};
+        table[0x28] = {"PLP", &CPU::plp, AddressingMode::IMPLIED, 4};
 
         table[0x4C] = {"JMP", &CPU::jmpAbsolute, AddressingMode::ABSOLUTE, 3};
         table[0x6C] = {"JMP", &CPU::jmpIndirect, AddressingMode::INDIRECT, 5};
@@ -151,6 +152,7 @@ public:
     void pha();
     void pla();
     void php();
+    void plp();
 
     void jmpAbsolute();
     void jmpIndirect();
