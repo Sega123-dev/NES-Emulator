@@ -82,8 +82,11 @@ public:
         table[0xA8] = {"TAY", &CPU::tay, AddressingMode::IMPLIED, 2};
         table[0x8A] = {"TXA", &CPU::txa, AddressingMode::IMPLIED, 2};
         table[0x98] = {"TYA", &CPU::tya, AddressingMode::IMPLIED, 2};
+
         table[0xBA] = {"TSX", &CPU::tsx, AddressingMode::IMPLIED, 2};
         table[0x9A] = {"TXS", &CPU::txs, AddressingMode::IMPLIED, 2};
+
+        table[0x48] = {"PHA", &CPU::pha, AddressingMode::IMPLIED, 3};
 
         table[0x4C] = {"JMP", &CPU::jmpAbsolute, AddressingMode::ABSOLUTE, 3};
         table[0x6C] = {"JMP", &CPU::jmpIndirect, AddressingMode::INDIRECT, 5};
@@ -139,8 +142,11 @@ public:
     void tay();
     void txa();
     void tya();
+
     void tsx();
     void txs();
+
+    void pha();
 
     void jmpAbsolute();
     void jmpIndirect();

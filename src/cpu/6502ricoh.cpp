@@ -398,6 +398,12 @@ void CPU::txs()
 {
     sp = X;
 }
+void CPU::pha()
+{
+    bus->write(0x0100 + sp, A);
+    sp--;
+}
+
 void CPU::jmpAbsolute()
 {
     uint8_t lowByte = bus->read(pc);
