@@ -403,7 +403,21 @@ void CPU::pha()
     bus->write(0x0100 + sp, A);
     sp--;
 }
+void CPU::pla()
+{
+    sp++;
+    A = bus->read(0x0100 + sp);
 
+    if (A == 0)
+        P |= 0x02;
+    else
+        P &= ~0x02;
+
+    if (A & 0x80)
+        P |= 0x80;
+    else
+        P &= ~0x80;
+}
 void CPU::jmpAbsolute()
 {
     uint8_t lowByte = bus->read(pc);
