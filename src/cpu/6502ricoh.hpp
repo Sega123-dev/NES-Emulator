@@ -171,4 +171,6 @@ public:
 
     void jsrAbsolute();
     void rts();
+
+    void setNZ(uint8_t reg);
 };

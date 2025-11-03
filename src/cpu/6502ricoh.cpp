@@ -1,5 +1,21 @@
 #include "6502ricoh.hpp"
 #include "../bus/bus.hpp"
+#include <cstdlib>
+// HELPERS
+
+void CPU::setNZ(uint8_t reg)
+{
+    if ((reg & 0x80) != 0)
+        P |= 0x80;
+    else
+        P &= ~0x80;
+    if (reg == 0)
+        P |= 0x02;
+    else
+        P &= ~0x02;
+}
+
+// REST OF THE CPU
 
 void CPU::reset()
 {
@@ -136,14 +152,7 @@ void CPU::ldaImmediate()
     uint8_t value = bus->read(pc++);
     A = value;
 
-    if ((A & 0x80) != 0)
-        P |= 0x80;
-    else
-        P &= ~0x80;
-    if (A == 0)
-        P |= 0x02;
-    else
-        P &= ~0x02;
+    setNZ(A);
 }
 void CPU::ldaZeroPage()
 {
@@ -152,14 +161,7 @@ void CPU::ldaZeroPage()
 
     A = value;
 
-    if ((A & 0x80) != 0)
-        P |= 0x80;
-    else
-        P &= ~0x80;
-    if (A == 0)
-        P |= 0x02;
-    else
-        P &= ~0x02;
+    setNZ(A);
 }
 void CPU::ldaZeroPageX()
 {
@@ -169,14 +171,7 @@ void CPU::ldaZeroPageX()
 
     A = value;
 
-    if ((A & 0x80) != 0)
-        P |= 0x80;
-    else
-        P &= ~0x80;
-    if (A == 0)
-        P |= 0x02;
-    else
-        P &= ~0x02;
+    setNZ(A);
 }
 void CPU::ldaAbsolute()
 {
@@ -186,14 +181,7 @@ void CPU::ldaAbsolute()
     uint8_t value = bus->read(finalAddress);
 
     A = value;
-    if ((A & 0x80) != 0)
-        P |= 0x80;
-    else
-        P &= ~0x80;
-    if (A == 0)
-        P |= 0x02;
-    else
-        P &= ~0x02;
+    setNZ(A);
 }
 void CPU::ldaAbsoluteX()
 {
@@ -209,14 +197,7 @@ void CPU::ldaAbsoluteX()
         cycles++;
 
     A = value;
-    if ((A & 0x80) != 0)
-        P |= 0x80;
-    else
-        P &= ~0x80;
-    if (A == 0)
-        P |= 0x02;
-    else
-        P &= ~0x02;
+    setNZ(A);
 }
 void CPU::ldaAbsoluteY()
 {
@@ -231,14 +212,7 @@ void CPU::ldaAbsoluteY()
     if ((finalAddress & 0xFF00) != (finalAddressY & 0xFF00))
         cycles++;
 
-    if ((A & 0x80) != 0)
-        P |= 0x80;
-    else
-        P &= ~0x80;
-    if (A == 0)
-        P |= 0x02;
-    else
-        P &= ~0x02;
+    setNZ(A);
 }
 void CPU::ldaIndexedIndirect()
 {
@@ -249,14 +223,7 @@ void CPU::ldaIndexedIndirect()
     uint16_t ptr = (highByte << 8) | lowByte;
     A = bus->read(ptr);
 
-    if ((A & 0x80) != 0)
-        P |= 0x80;
-    else
-        P &= ~0x80;
-    if (A == 0)
-        P |= 0x02;
-    else
-        P &= ~0x02;
+    setNZ(A);
 }
 void CPU::ldaIndirectIndexed()
 {
@@ -267,27 +234,14 @@ void CPU::ldaIndirectIndexed()
     uint16_t finalAddress = ptr + Y;
     A = bus->read(finalAddress);
 
-    if ((A & 0x80) != 0)
-        P |= 0x80;
-    else
-        P &= ~0x80;
-    if (A == 0)
-        P |= 0x02;
-    else
-        P &= ~0x02;
+    setNZ(A);
 }
 void CPU::ldxImmediate()
 {
     uint8_t value = bus->read(pc++);
     X = value;
-    if ((X & 0x80) != 0)
-        P |= 0x80;
-    else
-        P &= ~0x80;
-    if (X == 0)
-        P |= 0x02;
-    else
-        P &= ~0x02;
+
+    setNZ(X);
 }
 void CPU::ldxZeroPage()
 {
@@ -296,14 +250,7 @@ void CPU::ldxZeroPage()
 
     X = value;
 
-    if ((X & 0x80) != 0)
-        P |= 0x80;
-    else
-        P &= ~0x80;
-    if (X == 0)
-        P |= 0x02;
-    else
-        P &= ~0x02;
+    setNZ(X);
 }
 void CPU::ldxZeroPageY()
 {
@@ -313,14 +260,7 @@ void CPU::ldxZeroPageY()
 
     X = value;
 
-    if ((X & 0x80) != 0)
-        P |= 0x80;
-    else
-        P &= ~0x80;
-    if (X == 0)
-        P |= 0x02;
-    else
-        P &= ~0x02;
+    setNZ(X);
 }
 void CPU::ldxAbsolute()
 {
@@ -330,14 +270,8 @@ void CPU::ldxAbsolute()
     uint8_t value = bus->read(finalAddress);
 
     X = value;
-    if ((X & 0x80) != 0)
-        P |= 0x80;
-    else
-        P &= ~0x80;
-    if (X == 0)
-        P |= 0x02;
-    else
-        P &= ~0x02;
+
+    setNZ(X);
 }
 void CPU::ldxAbsoluteY()
 {
@@ -352,14 +286,7 @@ void CPU::ldxAbsoluteY()
     if ((finalAddress & 0xFF00) != (finalAddressY & 0xFF00))
         cycles++;
 
-    if ((X & 0x80) != 0)
-        P |= 0x80;
-    else
-        P &= ~0x80;
-    if (X == 0)
-        P |= 0x02;
-    else
-        P &= ~0x02;
+    setNZ(X);
 }
 void CPU::staAbsolute()
 {
