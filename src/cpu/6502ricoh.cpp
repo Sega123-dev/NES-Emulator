@@ -1,6 +1,7 @@
 #include "6502ricoh.hpp"
 #include "../bus/bus.hpp"
 #include <cstdlib>
+
 // HELPERS
 
 void CPU::setNZ(uint8_t reg)
@@ -75,57 +76,25 @@ void CPU::inx()
 {
     X++;
 
-    if (X == 0)
-        P |= 0x02;
-    else
-        P &= ~0x02;
-
-    if (X & 0x80)
-        P |= 0x80;
-    else
-        P &= ~0x80;
+    setNZ(X);
 }
 void CPU::iny()
 {
     Y++;
 
-    if (Y == 0)
-        P |= 0x02;
-    else
-        P &= ~0x02;
-
-    if (Y & 0x80)
-        P |= 0x80;
-    else
-        P &= ~0x80;
+    setNZ(Y);
 }
 void CPU::dex()
 {
     X--;
 
-    if (X == 0)
-        P |= 0x02;
-    else
-        P &= ~0x02;
-
-    if (X & 0x80)
-        P |= 0x80;
-    else
-        P &= ~0x80;
+    setNZ(X);
 }
 void CPU::dey()
 {
     Y--;
 
-    if (Y == 0)
-        P |= 0x02;
-    else
-        P &= ~0x02;
-
-    if (Y & 0x80)
-        P |= 0x80;
-    else
-        P &= ~0x80;
+    setNZ(Y);
 }
 void CPU::clc()
 {
@@ -348,62 +317,27 @@ void CPU::staIndirectIndexed()
 void CPU::tax()
 {
     X = A;
-    if (X == 0)
-        P |= 0x02;
-    else
-        P &= ~0x02;
-    if ((X & 0x80) != 0)
-        P |= 0x80;
-    else
-        P &= ~0x80;
+    setNZ(X);
 }
 void CPU::tay()
 {
     Y = A;
-    if (Y == 0)
-        P |= 0x02;
-    else
-        P &= ~0x02;
-    if ((Y & 0x80) != 0)
-        P |= 0x80;
-    else
-        P &= ~0x80;
+    setNZ(Y);
 }
 void CPU::txa()
 {
     A = X;
-    if (A == 0)
-        P |= 0x02;
-    else
-        P &= ~0x02;
-    if ((A & 0x80) != 0)
-        P |= 0x80;
-    else
-        P &= ~0x80;
+    setNZ(A);
 }
 void CPU::tya()
 {
     A = Y;
-    if (A == 0)
-        P |= 0x02;
-    else
-        P &= ~0x02;
-    if ((A & 0x80) != 0)
-        P |= 0x80;
-    else
-        P &= ~0x80;
+    setNZ(A);
 }
 void CPU::tsx()
 {
     X = sp;
-    if (X == 0)
-        P |= 0x02;
-    else
-        P &= ~0x02;
-    if ((X & 0x80) != 0)
-        P |= 0x80;
-    else
-        P &= ~0x80;
+    setNZ(X);
 }
 void CPU::txs()
 {
