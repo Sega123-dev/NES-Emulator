@@ -70,6 +70,12 @@ public:
         table[0xA1] = {"LDA", &CPU::ldaIndexedIndirect, AddressingMode::INDEXED_INDIRECT, 6};
         table[0xB1] = {"LDA", &CPU::ldaIndirectIndexed, AddressingMode::INDIRECT_INDEXED, 5};
 
+        table[0xA2] = {"LDX", &CPU::ldxImmediate, AddressingMode::IMMEDIATE, 2};
+        table[0xA6] = {"LDX", &CPU::ldxZeroPage, AddressingMode::ZERO_PAGE, 3};
+        table[0xB6] = {"LDX", &CPU::ldxZeroPageY, AddressingMode::ZERO_PAGE_Y, 4};
+        table[0xAE] = {"LDX", &CPU::ldxAbsolute, AddressingMode::ABSOLUTE, 4};
+        table[0xBE] = {"LDX", &CPU::ldxAbsoluteY, AddressingMode::ABSOLUTE_Y, 4};
+
         table[0x85] = {"STA", &CPU::staZeroPage, AddressingMode::ZERO_PAGE, 3};
         table[0x95] = {"STA", &CPU::staZeroPageX, AddressingMode::ZERO_PAGE_X, 4};
         table[0x8D] = {"STA", &CPU::staAbsolute, AddressingMode::ABSOLUTE, 4};
@@ -132,6 +138,12 @@ public:
     void ldaAbsoluteY();
     void ldaIndexedIndirect();
     void ldaIndirectIndexed();
+
+    void ldxImmediate();
+    void ldxZeroPage();
+    void ldxZeroPageY();
+    void ldxAbsolute();
+    void ldxAbsoluteY();
 
     void staZeroPage();
     void staZeroPageX();

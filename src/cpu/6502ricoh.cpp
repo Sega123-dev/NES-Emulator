@@ -195,7 +195,6 @@ void CPU::ldaAbsolute()
     else
         P &= ~0x02;
 }
-
 void CPU::ldaAbsoluteX()
 {
     uint8_t lowByte = bus->read(pc++);
@@ -273,6 +272,91 @@ void CPU::ldaIndirectIndexed()
     else
         P &= ~0x80;
     if (A == 0)
+        P |= 0x02;
+    else
+        P &= ~0x02;
+}
+void CPU::ldxImmediate()
+{
+    uint8_t value = bus->read(pc++);
+    X = value;
+    if ((X & 0x80) != 0)
+        P |= 0x80;
+    else
+        P &= ~0x80;
+    if (X == 0)
+        P |= 0x02;
+    else
+        P &= ~0x02;
+}
+void CPU::ldxZeroPage()
+{
+    uint8_t address = bus->read(pc++);
+    uint8_t value = bus->read(address);
+
+    X = value;
+
+    if ((X & 0x80) != 0)
+        P |= 0x80;
+    else
+        P &= ~0x80;
+    if (X == 0)
+        P |= 0x02;
+    else
+        P &= ~0x02;
+}
+void CPU::ldxZeroPageY()
+{
+    uint8_t address = bus->read(pc++);
+    uint8_t zeroPageAddress = (address + Y) & 0xFF;
+    uint8_t value = bus->read(zeroPageAddress);
+
+    X = value;
+
+    if ((X & 0x80) != 0)
+        P |= 0x80;
+    else
+        P &= ~0x80;
+    if (X == 0)
+        P |= 0x02;
+    else
+        P &= ~0x02;
+}
+void CPU::ldxAbsolute()
+{
+    uint8_t lowByte = bus->read(pc++);
+    uint8_t highByte = bus->read(pc++);
+    uint16_t finalAddress = (highByte << 8) | lowByte;
+    uint8_t value = bus->read(finalAddress);
+
+    X = value;
+    if ((X & 0x80) != 0)
+        P |= 0x80;
+    else
+        P &= ~0x80;
+    if (X == 0)
+        P |= 0x02;
+    else
+        P &= ~0x02;
+}
+void CPU::ldxAbsoluteY()
+{
+    uint8_t lowByte = bus->read(pc++);
+    uint8_t highByte = bus->read(pc++);
+    uint16_t finalAddress = (highByte << 8) | lowByte;
+    uint16_t finalAddressY = finalAddress + Y;
+    uint8_t value = bus->read(finalAddressY);
+
+    X = value;
+
+    if ((finalAddress & 0xFF00) != (finalAddressY & 0xFF00))
+        cycles++;
+
+    if ((X & 0x80) != 0)
+        P |= 0x80;
+    else
+        P &= ~0x80;
+    if (X == 0)
         P |= 0x02;
     else
         P &= ~0x02;
