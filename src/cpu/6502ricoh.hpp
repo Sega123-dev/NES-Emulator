@@ -76,6 +76,12 @@ public:
         table[0xAE] = {"LDX", &CPU::ldxAbsolute, AddressingMode::ABSOLUTE, 4};
         table[0xBE] = {"LDX", &CPU::ldxAbsoluteY, AddressingMode::ABSOLUTE_Y, 4};
 
+        table[0xA0] = {"LDY", &CPU::ldyImmediate, AddressingMode::IMMEDIATE, 2};
+        table[0xA4] = {"LDY", &CPU::ldyZeroPage, AddressingMode::ZERO_PAGE, 3};
+        table[0xB4] = {"LDY", &CPU::ldyZeroPageX, AddressingMode::ZERO_PAGE_X, 4};
+        table[0xAC] = {"LDY", &CPU::ldyAbsolute, AddressingMode::ABSOLUTE, 4};
+        table[0xBC] = {"LDY", &CPU::ldyAbsoluteX, AddressingMode::ABSOLUTE_X, 4};
+
         table[0x85] = {"STA", &CPU::staZeroPage, AddressingMode::ZERO_PAGE, 3};
         table[0x95] = {"STA", &CPU::staZeroPageX, AddressingMode::ZERO_PAGE_X, 4};
         table[0x8D] = {"STA", &CPU::staAbsolute, AddressingMode::ABSOLUTE, 4};
@@ -144,6 +150,12 @@ public:
     void ldxZeroPageY();
     void ldxAbsolute();
     void ldxAbsoluteY();
+
+    void ldyImmediate();
+    void ldyZeroPage();
+    void ldyZeroPageX();
+    void ldyAbsolute();
+    void ldyAbsoluteX();
 
     void staZeroPage();
     void staZeroPageX();

@@ -257,6 +257,58 @@ void CPU::ldxAbsoluteY()
 
     setNZ(X);
 }
+void CPU::ldyImmediate()
+{
+    uint8_t value = bus->read(pc++);
+    Y = value;
+
+    setNZ(Y);
+}
+void CPU::ldyZeroPage()
+{
+    uint8_t address = bus->read(pc++);
+    uint8_t value = bus->read(address);
+
+    Y = value;
+
+    setNZ(Y);
+}
+void CPU::ldyZeroPageX()
+{
+    uint8_t address = bus->read(pc++);
+    uint8_t zeroPageAddress = (address + X) & 0xFF;
+    uint8_t value = bus->read(zeroPageAddress);
+
+    Y = value;
+
+    setNZ(Y);
+}
+void CPU::ldyAbsolute()
+{
+    uint8_t lowByte = bus->read(pc++);
+    uint8_t highByte = bus->read(pc++);
+    uint16_t finalAddress = (highByte << 8) | lowByte;
+    uint8_t value = bus->read(finalAddress);
+
+    Y = value;
+
+    setNZ(Y);
+}
+void CPU::ldyAbsoluteX()
+{
+    uint8_t lowByte = bus->read(pc++);
+    uint8_t highByte = bus->read(pc++);
+    uint16_t finalAddress = (highByte << 8) | lowByte;
+    uint16_t finalAddressX = finalAddress + X;
+    uint8_t value = bus->read(finalAddressX);
+
+    Y = value;
+
+    if ((finalAddress & 0xFF00) != (finalAddressX & 0xFF00))
+        cycles++;
+
+    setNZ(Y);
+}
 void CPU::staAbsolute()
 {
     uint8_t lowByte = bus->read(pc);
