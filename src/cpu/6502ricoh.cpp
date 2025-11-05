@@ -16,6 +16,19 @@ void CPU::setNZ(uint8_t reg)
         P &= ~0x02;
 }
 
+void CPU::setVC(uint8_t V, uint8_t C)
+{
+    if (C)
+        P |= 0x01;
+    else
+        P &= ~0x01;
+
+    if (V)
+        P |= 0x40;
+    else
+        P &= ~0x40;
+}
+
 // REST OF THE CPU
 
 void CPU::reset()
@@ -489,15 +502,7 @@ void CPU::adcImmediate()
     C = (result > 0xFF) ? 1 : 0;
     V = (~(A ^ operand) & (A ^ newRes) & 0x80) ? 1 : 0;
 
-    if (C)
-        P |= 0x01;
-    else
-        P &= ~0x01;
-
-    if (V)
-        P |= 0x40;
-    else
-        P &= ~0x40;
+    setVC(V, C);
 
     A = newRes;
 
@@ -513,15 +518,7 @@ void CPU::adcZeroPage()
     C = (result > 0xFF) ? 1 : 0;
     V = (~(A ^ operand) & (A ^ newRes) & 0x80) ? 1 : 0;
 
-    if (C)
-        P |= 0x01;
-    else
-        P &= ~0x01;
-
-    if (V)
-        P |= 0x40;
-    else
-        P &= ~0x40;
+    setVC(V, C);
 
     A = newRes;
 
@@ -538,15 +535,7 @@ void CPU::adcZeroPageX()
     C = (result > 0xFF) ? 1 : 0;
     V = (~(A ^ operand) & (A ^ newRes) & 0x80) ? 1 : 0;
 
-    if (C)
-        P |= 0x01;
-    else
-        P &= ~0x01;
-
-    if (V)
-        P |= 0x40;
-    else
-        P &= ~0x40;
+    setVC(V, C);
 
     A = newRes;
 
@@ -566,15 +555,7 @@ void CPU::adcAbsolute()
     C = (result > 0xFF) ? 1 : 0;
     V = (~(A ^ operand) & (A ^ newRes) & 0x80) ? 1 : 0;
 
-    if (C)
-        P |= 0x01;
-    else
-        P &= ~0x01;
-
-    if (V)
-        P |= 0x40;
-    else
-        P &= ~0x40;
+    setVC(V, C);
 
     A = newRes;
 
@@ -597,15 +578,80 @@ void CPU::adcAbsoluteX()
     C = (result > 0xFF) ? 1 : 0;
     V = (~(A ^ operand) & (A ^ newRes) & 0x80) ? 1 : 0;
 
-    if (C)
-        P |= 0x01;
-    else
-        P &= ~0x01;
+    setVC(V, C);
 
-    if (V)
-        P |= 0x40;
-    else
-        P &= ~0x40;
+    A = newRes;
+
+    setNZ(A);
+}
+void CPU::adcAbsoluteY()
+{
+    uint8_t C, V = 0;
+    uint8_t lowByte = bus->read(pc++);
+    uint8_t highByte = bus->read(pc++);
+    uint16_t baseAddr = ((highByte << 8) | lowByte) + Y;
+    uint8_t operand = bus->read(baseAddr);
+
+    if ((baseAddr & 0xFF00) != (lowByte << 8))
+        cycles++;
+
+    uint16_t result = A + operand + (P & 0x01);
+    uint8_t newRes = result & 0xFF;
+
+    C = (result > 0xFF) ? 1 : 0;
+    V = (~(A ^ operand) & (A ^ newRes) & 0x80) ? 1 : 0;
+
+    setVC(V, C);
+
+    A = newRes;
+
+    setNZ(A);
+}
+void CPU::adcIndexedIndirect()
+{
+    uint8_t C, V = 0;
+    uint8_t zp = bus->read(pc++);
+    uint8_t ptr = (zp + X) & 0xFF;
+    uint8_t lowByte = bus->read(ptr);
+    uint8_t highByte = bus->read((ptr + 1) & 0xFF);
+
+    uint16_t effAddress = (highByte << 8) | lowByte;
+
+    uint8_t operand = bus->read(effAddress);
+
+    uint16_t result = A + operand + (P & 0x01);
+    uint8_t newRes = result & 0xFF;
+
+    C = (result > 0xFF) ? 1 : 0;
+    V = (~(A ^ operand) & (A ^ newRes) & 0x80) ? 1 : 0;
+
+    setVC(V, C);
+
+    A = newRes;
+
+    setNZ(A);
+}
+void CPU::adcIndirectIndexed()
+{
+    uint8_t C, V = 0;
+    uint8_t zp = bus->read(pc++);
+    uint8_t lowByte = bus->read(zp);
+    uint8_t highByte = bus->read((zp + 1) & 0xFF);
+
+    uint16_t effAddress = ((highByte << 8) | lowByte) + Y;
+
+    if ((effAddress & 0xFF00) != (lowByte << 8))
+        cycles++;
+
+    uint8_t operand = bus->read(effAddress);
+
+    uint16_t result = A + operand + (P & 0x01);
+    uint8_t newRes = result & 0xFF;
+
+    C = (result > 0xFF) ? 1 : 0;
+    V = (~(A ^ operand) & (A ^ newRes) & 0x80) ? 1 : 0;
+
+    setVC(V, C);
 
     A = newRes;
 

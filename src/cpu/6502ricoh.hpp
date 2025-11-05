@@ -203,4 +203,5 @@ public:
     void adcIndirectIndexed();
 
     void setNZ(uint8_t reg);
+    void setVC(uint8_t V, uint8_t C);
 };
