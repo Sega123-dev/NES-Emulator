@@ -108,6 +108,15 @@ public:
 
         table[0x20] = {"JSR", &CPU::jsrAbsolute, AddressingMode::ABSOLUTE, 6};
         table[0x60] = {"RTS", &CPU::rts, AddressingMode::IMPLIED};
+
+        table[0x69] = {"ADC", &CPU::adcImmediate, AddressingMode::IMMEDIATE, 2};
+        table[0x65] = {"ADC", &CPU::adcZeroPage, AddressingMode::ZERO_PAGE, 3};
+        table[0x75] = {"ADC", &CPU::adcZeroPageX, AddressingMode::ZERO_PAGE_X, 4};
+        table[0x6D] = {"ADC", &CPU::adcAbsolute, AddressingMode::ABSOLUTE, 4};
+        table[0x7D] = {"ADC", &CPU::adcAbsoluteX, AddressingMode::ABSOLUTE_X, 4};
+        table[0x79] = {"ADC", &CPU::adcAbsoluteY, AddressingMode::ABSOLUTE_Y, 4};
+        table[0x61] = {"ADC", &CPU::adcIndexedIndirect, AddressingMode::INDEXED_INDIRECT, 6};
+        table[0x71] = {"ADC", &CPU::adcIndirectIndexed, AddressingMode::INDIRECT_INDEXED, 5};
     };
     uint8_t dataBus, A, X, Y, P, sp, cycles, opState;
     uint16_t pc;
@@ -183,6 +192,15 @@ public:
 
     void jsrAbsolute();
     void rts();
+
+    void adcImmediate();
+    void adcZeroPage();
+    void adcZeroPageX();
+    void adcAbsolute();
+    void adcAbsoluteX();
+    void adcAbsoluteY();
+    void adcIndexedIndirect();
+    void adcIndirectIndexed();
 
     void setNZ(uint8_t reg);
 };

@@ -480,6 +480,137 @@ void CPU::rts()
 
     pc = subAddress + 1;
 }
+void CPU::adcImmediate()
+{
+    uint8_t C, V = 0;
+    uint8_t operand = bus->read(pc++);
+    uint16_t result = A + operand + (P & 0x01);
+    uint8_t newRes = result & 0xFF;
+    C = (result > 0xFF) ? 1 : 0;
+    V = (~(A ^ operand) & (A ^ newRes) & 0x80) ? 1 : 0;
+
+    if (C)
+        P |= 0x01;
+    else
+        P &= ~0x01;
+
+    if (V)
+        P |= 0x40;
+    else
+        P &= ~0x40;
+
+    A = newRes;
+
+    setNZ(A);
+}
+void CPU::adcZeroPage()
+{
+    uint8_t C, V = 0;
+    uint8_t zpAddr = bus->read(pc++);
+    uint8_t operand = bus->read(zpAddr);
+    uint16_t result = A + operand + (P & 0x01);
+    uint8_t newRes = result & 0xFF;
+    C = (result > 0xFF) ? 1 : 0;
+    V = (~(A ^ operand) & (A ^ newRes) & 0x80) ? 1 : 0;
+
+    if (C)
+        P |= 0x01;
+    else
+        P &= ~0x01;
+
+    if (V)
+        P |= 0x40;
+    else
+        P &= ~0x40;
+
+    A = newRes;
+
+    setNZ(A);
+}
+void CPU::adcZeroPageX()
+{
+    uint8_t C, V = 0;
+    uint8_t baseAddr = bus->read(pc++);
+    uint8_t zpAddr = (baseAddr + X) & 0xFF;
+    uint8_t operand = bus->read(zpAddr);
+    uint16_t result = A + operand + (P & 0x01);
+    uint8_t newRes = result & 0xFF;
+    C = (result > 0xFF) ? 1 : 0;
+    V = (~(A ^ operand) & (A ^ newRes) & 0x80) ? 1 : 0;
+
+    if (C)
+        P |= 0x01;
+    else
+        P &= ~0x01;
+
+    if (V)
+        P |= 0x40;
+    else
+        P &= ~0x40;
+
+    A = newRes;
+
+    setNZ(A);
+}
+void CPU::adcAbsolute()
+{
+    uint8_t C, V = 0;
+    uint8_t lowByte = bus->read(pc++);
+    uint8_t highByte = bus->read(pc++);
+    uint16_t baseAddr = (highByte << 8) | lowByte;
+    uint8_t operand = bus->read(baseAddr);
+
+    uint16_t result = A + operand + (P & 0x01);
+    uint8_t newRes = result & 0xFF;
+
+    C = (result > 0xFF) ? 1 : 0;
+    V = (~(A ^ operand) & (A ^ newRes) & 0x80) ? 1 : 0;
+
+    if (C)
+        P |= 0x01;
+    else
+        P &= ~0x01;
+
+    if (V)
+        P |= 0x40;
+    else
+        P &= ~0x40;
+
+    A = newRes;
+
+    setNZ(A);
+}
+void CPU::adcAbsoluteX()
+{
+    uint8_t C, V = 0;
+    uint8_t lowByte = bus->read(pc++);
+    uint8_t highByte = bus->read(pc++);
+    uint16_t baseAddr = ((highByte << 8) | lowByte) + X;
+    uint8_t operand = bus->read(baseAddr);
+
+    if ((baseAddr & 0xFF00) != (lowByte << 8))
+        cycles++;
+
+    uint16_t result = A + operand + (P & 0x01);
+    uint8_t newRes = result & 0xFF;
+
+    C = (result > 0xFF) ? 1 : 0;
+    V = (~(A ^ operand) & (A ^ newRes) & 0x80) ? 1 : 0;
+
+    if (C)
+        P |= 0x01;
+    else
+        P &= ~0x01;
+
+    if (V)
+        P |= 0x40;
+    else
+        P &= ~0x40;
+
+    A = newRes;
+
+    setNZ(A);
+}
 void CPU::clock()
 {
     if (cycles == 0)
