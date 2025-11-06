@@ -52,18 +52,16 @@ public:
         table[0xE8] = {"INX", &CPU::inx, AddressingMode::IMPLIED, 2};
         table[0xC8] = {"INY", &CPU::iny, AddressingMode::IMPLIED, 2};
 
-        table[0xEE] = {"DEC", &CPU::decAbsolute, AddressingMode::ABSOLUTE, 6};
-        table[0xFE] = {"DEC", &CPU::decAbsoluteX, AddressingMode::ABSOLUTE_X, 7};
-        table[0xE6] = {"DEC", &CPU::decZeroPage, AddressingMode::ZERO_PAGE, 5};
-        table[0xF6] = {"DEC", &CPU::decZeroPageX, AddressingMode::ABSOLUTE, 6};
+        table[0xCE] = {"DEC", &CPU::decAbsolute, AddressingMode::ABSOLUTE, 6};
+        table[0xDE] = {"DEC", &CPU::decAbsoluteX, AddressingMode::ABSOLUTE_X, 7};
+        table[0xC6] = {"DEC", &CPU::decZeroPage, AddressingMode::ZERO_PAGE, 5};
+        table[0xD6] = {"DEC", &CPU::decZeroPageX, AddressingMode::ABSOLUTE, 6};
 
         table[0xCA] = {"DEX", &CPU::dex, AddressingMode::IMPLIED, 2};
         table[0x88] = {"DEY", &CPU::dey, AddressingMode::IMPLIED, 2};
 
         table[0x18] = {"CLC", &CPU::clc, AddressingMode::IMPLIED, 2};
         table[0x38] = {"SEC", &CPU::sec, AddressingMode::IMPLIED, 2};
-
-        table[0xD8] = {"CLD", &CPU::cld, AddressingMode::IMPLIED, 2};
 
         table[0x78] = {"SEI", &CPU::sei, AddressingMode::IMPLIED, 2};
         table[0x58] = {"CLI", &CPU::cli, AddressingMode::IMPLIED, 2};
@@ -167,8 +165,6 @@ public:
 
     void clc();
     void sec();
-
-    void cld();
 
     void sei();
     void cli();

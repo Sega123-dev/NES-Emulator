@@ -141,6 +141,50 @@ void CPU::iny()
 
     setNZ(Y);
 }
+void CPU::decAbsolute()
+{
+    uint8_t lowByte = bus->read(pc++);
+    uint8_t highByte = bus->read(pc++);
+    uint16_t finalAddress = (highByte << 8) | lowByte;
+
+    uint16_t value = bus->read(finalAddress) - 1;
+    uint8_t bit8val = value & 0xFF;
+
+    bus->write(finalAddress, bit8val);
+
+    setNZ(bit8val);
+}
+void CPU::decAbsoluteX()
+{
+    uint8_t lowByte = bus->read(pc++);
+    uint8_t highByte = bus->read(pc++);
+    uint16_t finalAddress = (highByte << 8) | lowByte;
+
+    uint16_t value = bus->read(finalAddress + X) - 1;
+    uint8_t bit8val = value & 0xFF;
+
+    bus->write(finalAddress + X, bit8val);
+
+    setNZ(bit8val);
+}
+void CPU::decZeroPage()
+{
+    uint8_t address = bus->read(pc++);
+    uint8_t bit8val = bus->read(address);
+
+    bus->write(address, bit8val - 1);
+
+    setNZ(bit8val - 1);
+}
+void CPU::decZeroPageX()
+{
+    uint8_t address = bus->read(pc++);
+    uint8_t bit8val = bus->read((address + X) & 0xFF);
+
+    bus->write((address + X) & 0xFF, bit8val - 1);
+
+    setNZ(bit8val - 1);
+}
 void CPU::dex()
 {
     X--;
@@ -161,10 +205,7 @@ void CPU::sec()
 {
     P |= 0x01;
 }
-void CPU::cld()
-{
-    P &= ~0x08;
-}
+
 void CPU::cli()
 {
     P &= ~0x04;
