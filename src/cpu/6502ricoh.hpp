@@ -90,6 +90,14 @@ public:
         table[0x81] = {"STA", &CPU::staIndexedIndirect, AddressingMode::INDEXED_INDIRECT, 6};
         table[0x91] = {"STA", &CPU::staIndirectIndexed, AddressingMode::INDIRECT_INDEXED, 6};
 
+        table[0x86] = {"STX", &CPU::stxZeroPage, AddressingMode::ZERO_PAGE, 3};
+        table[0x96] = {"STX", &CPU::stxZeroPageY, AddressingMode::ZERO_PAGE_Y, 4};
+        table[0x8E] = {"STX", &CPU::stxAbsolute, AddressingMode::ABSOLUTE, 4};
+
+        table[0x84] = {"STY", &CPU::styZeroPage, AddressingMode::ZERO_PAGE, 3};
+        table[0x94] = {"STY", &CPU::styZeroPageY, AddressingMode::ZERO_PAGE_Y, 4};
+        table[0x8C] = {"STY", &CPU::styAbsolute, AddressingMode::ABSOLUTE, 4};
+
         table[0xAA] = {"TAX", &CPU::tax, AddressingMode::IMPLIED, 2};
         table[0xA8] = {"TAY", &CPU::tay, AddressingMode::IMPLIED, 2};
         table[0x8A] = {"TXA", &CPU::txa, AddressingMode::IMPLIED, 2};
@@ -173,6 +181,14 @@ public:
     void staAbsoluteY();
     void staIndexedIndirect();
     void staIndirectIndexed();
+
+    void stxZeroPage();
+    void stxZeroPageY();
+    void stxAbsolute();
+
+    void styZeroPage();
+    void styZeroPageY();
+    void styAbsolute();
 
     void tax();
     void tay();

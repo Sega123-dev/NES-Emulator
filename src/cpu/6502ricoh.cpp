@@ -379,6 +379,26 @@ void CPU::staIndirectIndexed()
     finalAddress += Y;
     bus->write(finalAddress, A);
 }
+void CPU::stxAbsolute()
+{
+    uint8_t lowByte = bus->read(pc);
+    uint8_t highByte = bus->read(pc + 1);
+    uint16_t finalAddress = (highByte << 8) | lowByte;
+    pc += 2;
+    bus->write(finalAddress, X);
+}
+void CPU::stxZeroPage()
+{
+    uint8_t address = bus->read(pc);
+    pc += 1;
+    bus->write(address, X);
+}
+void CPU::stxZeroPageY()
+{
+    uint8_t baseAddr = bus->read(pc);
+    pc += 1;
+    bus->write((baseAddr + Y) & 0xFF, X);
+}
 void CPU::tax()
 {
     X = A;
