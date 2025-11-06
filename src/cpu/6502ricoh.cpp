@@ -399,6 +399,26 @@ void CPU::stxZeroPageY()
     pc += 1;
     bus->write((baseAddr + Y) & 0xFF, X);
 }
+void CPU::styAbsolute()
+{
+    uint8_t lowByte = bus->read(pc);
+    uint8_t highByte = bus->read(pc + 1);
+    uint16_t finalAddress = (highByte << 8) | lowByte;
+    pc += 2;
+    bus->write(finalAddress, Y);
+}
+void CPU::styZeroPage()
+{
+    uint8_t address = bus->read(pc);
+    pc += 1;
+    bus->write(address, Y);
+}
+void CPU::styZeroPageX()
+{
+    uint8_t baseAddr = bus->read(pc);
+    pc += 1;
+    bus->write((baseAddr + X) & 0xFF, Y);
+}
 void CPU::tax()
 {
     X = A;

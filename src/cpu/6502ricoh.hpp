@@ -95,7 +95,7 @@ public:
         table[0x8E] = {"STX", &CPU::stxAbsolute, AddressingMode::ABSOLUTE, 4};
 
         table[0x84] = {"STY", &CPU::styZeroPage, AddressingMode::ZERO_PAGE, 3};
-        table[0x94] = {"STY", &CPU::styZeroPageY, AddressingMode::ZERO_PAGE_Y, 4};
+        table[0x94] = {"STY", &CPU::styZeroPageX, AddressingMode::ZERO_PAGE_Y, 4};
         table[0x8C] = {"STY", &CPU::styAbsolute, AddressingMode::ABSOLUTE, 4};
 
         table[0xAA] = {"TAX", &CPU::tax, AddressingMode::IMPLIED, 2};
@@ -187,7 +187,7 @@ public:
     void stxAbsolute();
 
     void styZeroPage();
-    void styZeroPageY();
+    void styZeroPageX();
     void styAbsolute();
 
     void tax();
