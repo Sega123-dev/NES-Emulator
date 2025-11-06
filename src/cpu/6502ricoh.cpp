@@ -85,6 +85,50 @@ void CPU::rti()
     uint16_t subAddress = (highByte << 8) | lowByte;
     pc = subAddress;
 }
+void CPU::incAbsolute()
+{
+    uint8_t lowByte = bus->read(pc++);
+    uint8_t highByte = bus->read(pc++);
+    uint16_t finalAddress = (highByte << 8) | lowByte;
+
+    uint16_t value = bus->read(finalAddress) + 1;
+    uint8_t bit8val = value & 0xFF;
+
+    bus->write(finalAddress, bit8val);
+
+    setNZ(bit8val);
+}
+void CPU::incAbsoluteX()
+{
+    uint8_t lowByte = bus->read(pc++);
+    uint8_t highByte = bus->read(pc++);
+    uint16_t finalAddress = (highByte << 8) | lowByte;
+
+    uint16_t value = bus->read(finalAddress + X) + 1;
+    uint8_t bit8val = value & 0xFF;
+
+    bus->write(finalAddress + X, bit8val);
+
+    setNZ(bit8val);
+}
+void CPU::incZeroPage()
+{
+    uint8_t address = bus->read(pc++);
+    uint8_t bit8val = bus->read(address);
+
+    bus->write(address, bit8val + 1);
+
+    setNZ(bit8val + 1);
+}
+void CPU::incZeroPageX()
+{
+    uint8_t address = bus->read(pc++);
+    uint8_t bit8val = bus->read((address + X) & 0xFF);
+
+    bus->write((address + X) & 0xFF, bit8val + 1);
+
+    setNZ(bit8val + 1);
+}
 void CPU::inx()
 {
     X++;
