@@ -85,6 +85,53 @@ void CPU::rti()
     uint16_t subAddress = (highByte << 8) | lowByte;
     pc = subAddress;
 }
+void CPU::bitAbsolute()
+{
+    uint8_t lowByte = bus->read(pc++);
+    uint8_t highByte = bus->read(pc++);
+
+    uint16_t addr = (highByte << 8) | lowByte;
+    uint8_t value = bus->read(addr);
+
+    uint8_t result = A & value;
+
+    if (result == 0)
+        P |= 0x02;
+    else
+        P &= ~0x02;
+
+    if (value & 0x40)
+        P |= 0x40;
+    else
+        P &= ~0x40;
+
+    if (value & 0x80)
+        P |= 0x80;
+    else
+        P &= ~0x80;
+}
+void CPU::bitZeroPage()
+{
+    uint8_t addr = bus->read(pc++);
+    uint8_t value = bus->read(addr);
+
+    uint8_t result = A & value;
+
+    if (result == 0)
+        P |= 0x02;
+    else
+        P &= ~0x02;
+
+    if (value & 0x40)
+        P |= 0x40;
+    else
+        P &= ~0x40;
+
+    if (value & 0x80)
+        P |= 0x80;
+    else
+        P &= ~0x80;
+}
 void CPU::incAbsolute()
 {
     uint8_t lowByte = bus->read(pc++);
@@ -213,6 +260,10 @@ void CPU::cli()
 void CPU::sei()
 {
     P |= 0x04;
+}
+void CPU::clv()
+{
+    P &= ~0x40;
 }
 void CPU::ldaImmediate()
 {

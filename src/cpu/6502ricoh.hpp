@@ -44,6 +44,9 @@ public:
         table[0xEA] = {"NOP", &CPU::nop, AddressingMode::IMPLIED, 2};
         table[0x40] = {"RTI", &CPU::rti, AddressingMode::IMPLIED, 6};
 
+        table[0x2C] = {"BIT", &CPU::bitAbsolute, AddressingMode::ABSOLUTE, 4};
+        table[0x24] = {"BIT", &CPU::bitZeroPage, AddressingMode::ZERO_PAGE, 3};
+
         table[0xEE] = {"INC", &CPU::incAbsolute, AddressingMode::ABSOLUTE, 6};
         table[0xFE] = {"INC", &CPU::incAbsoluteX, AddressingMode::ABSOLUTE_X, 7};
         table[0xE6] = {"INC", &CPU::incZeroPage, AddressingMode::ZERO_PAGE, 5};
@@ -66,8 +69,7 @@ public:
         table[0x78] = {"SEI", &CPU::sei, AddressingMode::IMPLIED, 2};
         table[0x58] = {"CLI", &CPU::cli, AddressingMode::IMPLIED, 2};
 
-        table[0x78] = {"SEI", &CPU::sei, AddressingMode::IMPLIED, 2};
-        table[0x58] = {"CLI", &CPU::cli, AddressingMode::IMPLIED, 2};
+        table[0xB8] = {"CLV", &CPU::clv, AddressingMode::IMPLIED, 2};
 
         table[0xA9] = {"LDA", &CPU::ldaImmediate, AddressingMode::IMMEDIATE, 2};
         table[0xA5] = {"LDA", &CPU::ldaZeroPage, AddressingMode::ZERO_PAGE, 3};
@@ -147,6 +149,9 @@ public:
     void nop();
     void rti();
 
+    void bitAbsolute();
+    void bitZeroPage();
+
     void incAbsolute();
     void incAbsoluteX();
     void incZeroPage();
@@ -168,6 +173,8 @@ public:
 
     void sei();
     void cli();
+
+    void clv();
 
     void ldaImmediate();
     void ldaZeroPage();
