@@ -1025,48 +1025,72 @@ void CPU::sbcIndirectIndexed()
 }
 void CPU::bcc()
 {
+    uint16_t oldPC = pc;
     int8_t offset = (int8_t)bus->read(pc++);
+    if ((oldPC & 0xFF00) != (pc & 0xFF00))
+        cycles++;
     if (!(P & 0x01))
         pc += offset;
 }
 void CPU::bcs()
 {
+    uint16_t oldPC = pc;
+    if ((oldPC & 0xFF00) != (pc & 0xFF00))
+        cycles++;
     int8_t offset = (int8_t)bus->read(pc++);
     if ((P & 0x01))
         pc += offset;
 }
 void CPU::beq()
 {
+    uint16_t oldPC = pc;
+    if ((oldPC & 0xFF00) != (pc & 0xFF00))
+        cycles++;
     int8_t offset = (int8_t)bus->read(pc++);
     if ((P & 0x02))
         pc += offset;
 }
 void CPU::bne()
 {
+    uint16_t oldPC = pc;
+    if ((oldPC & 0xFF00) != (pc & 0xFF00))
+        cycles++;
     int8_t offset = (int8_t)bus->read(pc++);
     if (!(P & 0x02))
         pc += offset;
 }
 void CPU::bmi()
 {
+    uint16_t oldPC = pc;
+    if ((oldPC & 0xFF00) != (pc & 0xFF00))
+        cycles++;
     int8_t offset = (int8_t)bus->read(pc++);
     if ((P & 0x80))
         pc += offset;
 }
 void CPU::bpl()
 {
+    uint16_t oldPC = pc;
+    if ((oldPC & 0xFF00) != (pc & 0xFF00))
+        cycles++;
     int8_t offset = (int8_t)bus->read(pc++);
     if (!(P & 0x80))
         pc += offset;
 }
 void CPU::bvc()
 {
+    uint16_t oldPC = pc;
+    if ((oldPC & 0xFF00) != (pc & 0xFF00))
+        cycles++;
     int8_t offset = (int8_t)bus->read(pc++);
     if (!(P & 0x40))
         pc += offset;
 }
 void CPU::bvs()
 {
+    uint16_t oldPC = pc;
+    if ((oldPC & 0xFF00) != (pc & 0xFF00))
+        cycles++;
     int8_t offset = (int8_t)bus->read(pc++);
     if ((P & 0x40))
         pc += offset;
