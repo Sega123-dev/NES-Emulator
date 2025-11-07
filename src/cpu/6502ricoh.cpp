@@ -1053,6 +1053,12 @@ void CPU::bmi()
     if ((P & 0x80))
         pc += offset;
 }
+void CPU::bpl()
+{
+    int8_t offset = (int8_t)bus->read(pc++);
+    if (!(P & 0x80))
+        pc += offset;
+}
 void CPU::clock()
 {
     if (cycles == 0)
