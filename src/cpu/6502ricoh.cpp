@@ -1029,6 +1029,12 @@ void CPU::bcc()
     if (!(P & 0x01))
         pc += offset;
 }
+void CPU::bcs()
+{
+    int8_t offset = (int8_t)bus->read(pc++);
+    if ((P & 0x01))
+        pc += offset;
+}
 void CPU::clock()
 {
     if (cycles == 0)
