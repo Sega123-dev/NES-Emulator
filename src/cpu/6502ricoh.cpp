@@ -833,6 +833,196 @@ void CPU::adcIndirectIndexed()
 
     setNZ(A);
 }
+void CPU::sbcImmediate()
+{
+    uint8_t value = bus->read(pc++);
+
+    uint16_t temp = (uint16_t)A - value - (1 - (P & 0x01));
+
+    if (temp < 0x100)
+        P |= 0x01;
+    else
+        P &= ~0x01;
+
+    if (((A ^ temp) & 0x80) && ((A ^ value) & 0x80))
+        P |= 0x40;
+    else
+        P &= ~0x40;
+
+    A = temp & 0xFF;
+
+    setNZ(A);
+}
+void CPU::sbcZeroPage()
+{
+    uint8_t addr = bus->read(pc++);
+    uint8_t value = bus->read(addr);
+    uint16_t temp = (uint16_t)A - value - (1 - (P & 0x01));
+
+    if (temp < 0x100)
+        P |= 0x01;
+    else
+        P &= ~0x01;
+
+    if (((A ^ temp) & 0x80) && ((A ^ value) & 0x80))
+        P |= 0x40;
+    else
+        P &= ~0x40;
+
+    A = temp & 0xFF;
+
+    setNZ(A);
+}
+void CPU::sbcZeroPageX()
+{
+    uint8_t addr = bus->read(pc++);
+    uint8_t value = bus->read(addr + X) & 0xFF;
+    uint16_t temp = (uint16_t)A - value - (1 - (P & 0x01));
+
+    if (temp < 0x100)
+        P |= 0x01;
+    else
+        P &= ~0x01;
+
+    if (((A ^ temp) & 0x80) && ((A ^ value) & 0x80))
+        P |= 0x40;
+    else
+        P &= ~0x40;
+
+    A = temp & 0xFF;
+
+    setNZ(A);
+}
+void CPU::sbcAbsolute()
+{
+    uint8_t lowByte = bus->read(pc++);
+    uint8_t highByte = bus->read(pc++);
+    uint16_t baseAddr = ((highByte << 8) | lowByte);
+    uint8_t value = bus->read(baseAddr);
+    uint16_t temp = (uint16_t)A - value - (1 - (P & 0x01));
+
+    if (temp < 0x100)
+        P |= 0x01;
+    else
+        P &= ~0x01;
+
+    if (((A ^ temp) & 0x80) && ((A ^ value) & 0x80))
+        P |= 0x40;
+    else
+        P &= ~0x40;
+
+    A = temp & 0xFF;
+
+    setNZ(A);
+}
+void CPU::sbcAbsoluteX()
+{
+    uint8_t lowByte = bus->read(pc++);
+    uint8_t highByte = bus->read(pc++);
+    uint16_t baseAddr = ((highByte << 8) | lowByte);
+
+    if ((baseAddr & 0xFF00) != ((baseAddr + X) & 0xFF00))
+        cycles++;
+
+    uint8_t value = bus->read(baseAddr + X);
+    uint16_t temp = (uint16_t)A - value - (1 - (P & 0x01));
+
+    if (temp < 0x100)
+        P |= 0x01;
+    else
+        P &= ~0x01;
+
+    if (((A ^ temp) & 0x80) && ((A ^ value) & 0x80))
+        P |= 0x40;
+    else
+        P &= ~0x40;
+
+    A = temp & 0xFF;
+
+    setNZ(A);
+}
+void CPU::sbcAbsoluteY()
+{
+    uint8_t lowByte = bus->read(pc++);
+    uint8_t highByte = bus->read(pc++);
+    uint16_t baseAddr = ((highByte << 8) | lowByte);
+
+    if ((baseAddr & 0xFF00) != ((baseAddr + Y) & 0xFF00))
+        cycles++;
+
+    uint8_t value = bus->read(baseAddr + Y);
+    uint16_t temp = (uint16_t)A - value - (1 - (P & 0x01));
+
+    if (temp < 0x100)
+        P |= 0x01;
+    else
+        P &= ~0x01;
+
+    if (((A ^ temp) & 0x80) && ((A ^ value) & 0x80))
+        P |= 0x40;
+    else
+        P &= ~0x40;
+
+    A = temp & 0xFF;
+
+    setNZ(A);
+}
+void CPU::sbcIndexedIndirect()
+{
+    uint8_t zp = bus->read(pc++);
+    uint8_t ptr = (zp + X) & 0xFF;
+
+    uint8_t lowByte = bus->read(ptr);
+    uint8_t highByte = bus->read((ptr + 1) & 0xFF);
+
+    uint16_t addr = ((highByte << 8) | lowByte);
+
+    uint8_t value = bus->read(addr);
+    uint16_t temp = (uint16_t)A - value - (1 - (P & 0x01));
+
+    if (temp < 0x100)
+        P |= 0x01;
+    else
+        P &= ~0x01;
+
+    if (((A ^ temp) & 0x80) && ((A ^ value) & 0x80))
+        P |= 0x40;
+    else
+        P &= ~0x40;
+
+    A = temp & 0xFF;
+
+    setNZ(A);
+}
+void CPU::sbcIndirectIndexed()
+{
+    uint8_t zp = bus->read(pc++);
+
+    uint8_t lowByte = bus->read(zp);
+    uint8_t highByte = bus->read((zp + 1) & 0xFF);
+
+    uint16_t addr = ((highByte << 8) | lowByte);
+
+    if ((addr & 0xFF00) != ((addr + Y) & 0xFF00))
+        cycles++;
+
+    uint8_t value = bus->read(addr + Y);
+    uint16_t temp = (uint16_t)A - value - (1 - (P & 0x01));
+
+    if (temp < 0x100)
+        P |= 0x01;
+    else
+        P &= ~0x01;
+
+    if (((A ^ temp) & 0x80) && ((A ^ value) & 0x80))
+        P |= 0x40;
+    else
+        P &= ~0x40;
+
+    A = temp & 0xFF;
+
+    setNZ(A);
+}
 void CPU::clock()
 {
     if (cycles == 0)

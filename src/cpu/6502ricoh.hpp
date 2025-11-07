@@ -135,6 +135,15 @@ public:
         table[0x79] = {"ADC", &CPU::adcAbsoluteY, AddressingMode::ABSOLUTE_Y, 4};
         table[0x61] = {"ADC", &CPU::adcIndexedIndirect, AddressingMode::INDEXED_INDIRECT, 6};
         table[0x71] = {"ADC", &CPU::adcIndirectIndexed, AddressingMode::INDIRECT_INDEXED, 5};
+
+        table[0xE9] = {"SBC", &CPU::sbcImmediate, AddressingMode::IMMEDIATE, 2};
+        table[0xE5] = {"SBC", &CPU::sbcZeroPage, AddressingMode::ZERO_PAGE, 3};
+        table[0xF5] = {"SBC", &CPU::sbcZeroPageX, AddressingMode::ZERO_PAGE_X, 4};
+        table[0xED] = {"SBC", &CPU::sbcAbsolute, AddressingMode::ABSOLUTE, 4};
+        table[0xFD] = {"SBC", &CPU::sbcAbsoluteX, AddressingMode::ABSOLUTE_X, 4 /* +1 if page crossed */};
+        table[0xF9] = {"SBC", &CPU::sbcAbsoluteY, AddressingMode::ABSOLUTE_Y, 4 /* +1 if page crossed */};
+        table[0xE1] = {"SBC", &CPU::sbcIndexedIndirect, AddressingMode::INDEXED_INDIRECT, 6};
+        table[0xF1] = {"SBC", &CPU::sbcIndirectIndexed, AddressingMode::INDIRECT_INDEXED, 5 /* +1 if page crossed */};
     };
     uint8_t dataBus, A, X, Y, P, sp, cycles, opState;
     uint16_t pc;
@@ -240,6 +249,15 @@ public:
     void adcAbsoluteY();
     void adcIndexedIndirect();
     void adcIndirectIndexed();
+
+    void sbcImmediate();
+    void sbcZeroPage();
+    void sbcZeroPageX();
+    void sbcAbsolute();
+    void sbcAbsoluteX();
+    void sbcAbsoluteY();
+    void sbcIndexedIndirect();
+    void sbcIndirectIndexed();
 
     void setNZ(uint8_t reg);
     void setVC(uint8_t V, uint8_t C);
