@@ -1065,6 +1065,12 @@ void CPU::bvc()
     if (!(P & 0x40))
         pc += offset;
 }
+void CPU::bvs()
+{
+    int8_t offset = (int8_t)bus->read(pc++);
+    if ((P & 0x40))
+        pc += offset;
+}
 void CPU::clock()
 {
     if (cycles == 0)
