@@ -31,6 +31,7 @@ void CPU::setVC(uint8_t V, uint8_t C)
 
 void CPU::compare(uint8_t reg, uint8_t value)
 {
+    uint8_t result = (int16_t)reg - int16_t(value);
     if (reg >= value)
         P |= 0x01 << 0;
     else
@@ -39,7 +40,7 @@ void CPU::compare(uint8_t reg, uint8_t value)
         P |= 0x01 << 1;
     else
         P &= ~(0x01 << 1);
-    if ((((int16_t)reg - int16_t(value))) & 0x80)
+    if (result & 0x80)
         P |= 0x01 << 7;
     else
         P &= ~(0x01 << 7);
@@ -1371,7 +1372,71 @@ void CPU::oraIndirectIndexed()
 }
 void CPU::cmpImmediate()
 {
-    uint8_t value = bus->read(pc++);
+    compare(A, bus->read(pc++));
+}
+void CPU::cmpZeroPage()
+{
+    uint8_t addr = bus->read(pc++);
+    compare(A, bus->read(addr));
+}
+void CPU::cmpZeroPageX()
+{
+    uint8_t addr = bus->read(pc++);
+    compare(A, bus->read((addr + X) & 0xFF));
+}
+void CPU::cmpAbsolute()
+{
+    uint8_t lowByte = bus->read(pc++);
+    uint8_t highByte = bus->read(pc++);
+    uint16_t finalAddr = (highByte << 8) | lowByte;
+
+    compare(A, bus->read(finalAddr));
+}
+void CPU::cmpAbsoluteX()
+{
+    uint8_t lowByte = bus->read(pc++);
+    uint8_t highByte = bus->read(pc++);
+    uint16_t finalAddr = (highByte << 8) | lowByte;
+
+    if ((finalAddr & 0xFF00) != ((finalAddr + X) & 0xFF00))
+        cycles++;
+
+    compare(A, bus->read(finalAddr + X));
+}
+void CPU::cmpAbsoluteY()
+{
+    uint8_t lowByte = bus->read(pc++);
+    uint8_t highByte = bus->read(pc++);
+    uint16_t finalAddr = (highByte << 8) | lowByte;
+
+    if ((finalAddr & 0xFF00) != ((finalAddr + Y) & 0xFF00))
+        cycles++;
+
+    compare(A, bus->read(finalAddr + Y));
+}
+void CPU::cmpIndexedIndirect()
+{
+    uint8_t zp = bus->read(pc++);
+    uint8_t ptr = bus->read(zp + X) & 0xFF;
+    uint8_t lowByte = bus->read(ptr);
+    uint8_t highByte = bus->read((ptr + 1) & 0xFF);
+
+    uint16_t finalAddr = (highByte << 8) | lowByte;
+
+    compare(A, bus->read(finalAddr));
+}
+void CPU::cmpIndirectIndexed()
+{
+    uint8_t zp = bus->read(pc++);
+    uint8_t lowByte = bus->read(zp);
+    uint8_t highByte = bus->read((zp + 1) & 0xFF);
+
+    uint16_t finalAddr = (highByte << 8) | lowByte;
+
+    if ((finalAddr & 0xFF00) != ((finalAddr + Y) & 0xFF00))
+        cycles++;
+
+    compare(A, bus->read(finalAddr + Y));
 }
 void CPU::clock()
 {
