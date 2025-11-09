@@ -1141,6 +1141,20 @@ void CPU::andAbsoluteX()
     A = A & value;
     setNZ(A);
 }
+void CPU::andAbsoluteY()
+{
+    uint8_t lowByte = bus->read(pc++);
+    uint8_t highByte = bus->read(pc++);
+
+    uint16_t finalAddr = (highByte << 8) | lowByte;
+
+    if ((finalAddr & 0xFF00) != ((finalAddr + Y) & 0xFF00))
+        cycles++;
+
+    uint8_t value = bus->read(finalAddr + Y);
+    A = A & value;
+    setNZ(A);
+}
 void CPU::andIndexedIndirect()
 {
     uint8_t zp = bus->read(pc++);
@@ -1165,6 +1179,92 @@ void CPU::andIndirectIndexed()
 
     uint8_t value = bus->read(finalAddr + Y);
     A = A & value;
+    setNZ(A);
+}
+void CPU::eorImmediate()
+{
+    uint8_t value = bus->read(pc++);
+    A = A ^ value;
+    setNZ(A);
+}
+void CPU::eorZeroPage()
+{
+    uint8_t addr = bus->read(pc++);
+    uint8_t value = bus->read(addr);
+
+    A = A ^ value;
+    setNZ(A);
+}
+void CPU::eorZeroPageX()
+{
+    uint8_t addr = bus->read(pc++);
+    uint8_t value = bus->read((addr + X) & 0xFF);
+    A = A ^ value;
+    setNZ(A);
+}
+void CPU::eorAbsolute()
+{
+    uint8_t lowByte = bus->read(pc++);
+    uint8_t highByte = bus->read(pc++);
+
+    uint16_t finalAddr = (highByte << 8) | lowByte;
+
+    uint8_t value = bus->read(finalAddr);
+    A = A ^ value;
+    setNZ(A);
+}
+void CPU::eorAbsoluteX()
+{
+    uint8_t lowByte = bus->read(pc++);
+    uint8_t highByte = bus->read(pc++);
+
+    uint16_t finalAddr = (highByte << 8) | lowByte;
+
+    if ((finalAddr & 0xFF00) != ((finalAddr + X) & 0xFF00))
+        cycles++;
+
+    uint8_t value = bus->read(finalAddr + X);
+    A = A ^ value;
+    setNZ(A);
+}
+void CPU::eorAbsoluteY()
+{
+    uint8_t lowByte = bus->read(pc++);
+    uint8_t highByte = bus->read(pc++);
+
+    uint16_t finalAddr = (highByte << 8) | lowByte;
+
+    if ((finalAddr & 0xFF00) != ((finalAddr + Y) & 0xFF00))
+        cycles++;
+
+    uint8_t value = bus->read(finalAddr + Y);
+    A = A ^ value;
+    setNZ(A);
+}
+void CPU::eorIndexedIndirect()
+{
+    uint8_t zp = bus->read(pc++);
+    uint8_t ptr = bus->read(zp + X) & 0xFF;
+    uint8_t lowByte = bus->read(ptr);
+    uint8_t highByte = bus->read((ptr + 1) & 0xFF);
+    uint16_t finalAddr = (highByte << 8) | lowByte;
+
+    uint8_t value = bus->read(finalAddr);
+    A = A ^ value;
+    setNZ(A);
+}
+void CPU::eorIndirectIndexed()
+{
+    uint8_t zp = bus->read(pc++);
+    uint8_t lowByte = bus->read(zp);
+    uint8_t highByte = bus->read((zp + 1) & 0xFF);
+    uint16_t finalAddr = (highByte << 8) | lowByte;
+
+    if ((finalAddr & 0xFF00) != ((finalAddr + Y) & 0xFF00))
+        cycles++;
+
+    uint8_t value = bus->read(finalAddr + Y);
+    A = A ^ value;
     setNZ(A);
 }
 void CPU::clock()
