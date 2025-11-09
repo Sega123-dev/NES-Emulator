@@ -153,6 +153,15 @@ public:
         table[0x10] = {"BPL", &CPU::bpl, AddressingMode::RELATIVE, 2};
         table[0x50] = {"BVC", &CPU::bvc, AddressingMode::RELATIVE, 2};
         table[0x70] = {"BVS", &CPU::bvs, AddressingMode::RELATIVE, 2};
+
+        table[0x29] = {"AND", &CPU::andImmediate, AddressingMode::IMMEDIATE, 2};
+        table[0x25] = {"AND", &CPU::andZeroPage, AddressingMode::ZERO_PAGE, 3};
+        table[0x35] = {"AND", &CPU::andZeroPageX, AddressingMode::ZERO_PAGE_X, 4};
+        table[0x2D] = {"AND", &CPU::andAbsolute, AddressingMode::ABSOLUTE, 4};
+        table[0x3D] = {"AND", &CPU::andAbsoluteX, AddressingMode::ABSOLUTE_X, 4};
+        table[0x39] = {"AND", &CPU::andAbsoluteY, AddressingMode::ABSOLUTE_Y, 4};
+        table[0x21] = {"AND", &CPU::andIndexedIndirect, AddressingMode::INDEXED_INDIRECT, 6};
+        table[0x31] = {"AND", &CPU::andIndirectIndexed, AddressingMode::INDIRECT_INDEXED, 5};
     };
     uint8_t dataBus, A, X, Y, P, sp, cycles, opState;
     uint16_t pc;
@@ -276,6 +285,15 @@ public:
     void bpl();
     void bvc();
     void bvs();
+
+    void andImmediate();
+    void andZeroPage();
+    void andZeroPageX();
+    void andAbsolute();
+    void andAbsoluteX();
+    void andAbsoluteY();
+    void andIndexedIndirect();
+    void andIndirectIndexed();
 
     void setNZ(uint8_t reg);
     void setVC(uint8_t V, uint8_t C);
