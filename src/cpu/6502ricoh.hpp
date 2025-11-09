@@ -171,6 +171,24 @@ public:
         table[0x59] = {"EOR", &CPU::eorAbsoluteY, AddressingMode::ABSOLUTE_Y, 4};
         table[0x41] = {"EOR", &CPU::eorIndexedIndirect, AddressingMode::INDEXED_INDIRECT, 6};
         table[0x51] = {"EOR", &CPU::eorIndirectIndexed, AddressingMode::INDIRECT_INDEXED, 5};
+
+        table[0x49] = {"EOR", &CPU::eorImmediate, AddressingMode::IMMEDIATE, 2};
+        table[0x45] = {"EOR", &CPU::eorZeroPage, AddressingMode::ZERO_PAGE, 3};
+        table[0x55] = {"EOR", &CPU::eorZeroPageX, AddressingMode::ZERO_PAGE_X, 4};
+        table[0x4D] = {"EOR", &CPU::eorAbsolute, AddressingMode::ABSOLUTE, 4};
+        table[0x5D] = {"EOR", &CPU::eorAbsoluteX, AddressingMode::ABSOLUTE_X, 4};
+        table[0x59] = {"EOR", &CPU::eorAbsoluteY, AddressingMode::ABSOLUTE_Y, 4};
+        table[0x41] = {"EOR", &CPU::eorIndexedIndirect, AddressingMode::INDEXED_INDIRECT, 6};
+        table[0x51] = {"EOR", &CPU::eorIndirectIndexed, AddressingMode::INDIRECT_INDEXED, 5};
+
+        table[0x09] = {"ORA", &CPU::oraImmediate, AddressingMode::IMMEDIATE, 2};
+        table[0x05] = {"ORA", &CPU::oraZeroPage, AddressingMode::ZERO_PAGE, 3};
+        table[0x15] = {"ORA", &CPU::oraZeroPageX, AddressingMode::ZERO_PAGE_X, 4};
+        table[0x0D] = {"ORA", &CPU::oraAbsolute, AddressingMode::ABSOLUTE, 4};
+        table[0x1D] = {"ORA", &CPU::oraAbsoluteX, AddressingMode::ABSOLUTE_X, 4};
+        table[0x19] = {"ORA", &CPU::oraAbsoluteY, AddressingMode::ABSOLUTE_Y, 4};
+        table[0x01] = {"ORA", &CPU::oraIndexedIndirect, AddressingMode::INDEXED_INDIRECT, 6};
+        table[0x11] = {"ORA", &CPU::oraIndirectIndexed, AddressingMode::INDIRECT_INDEXED, 5};
     };
     uint8_t dataBus, A, X, Y, P, sp, cycles, opState;
     uint16_t pc;
@@ -312,6 +330,15 @@ public:
     void eorAbsoluteY();
     void eorIndexedIndirect();
     void eorIndirectIndexed();
+
+    void oraImmediate();
+    void oraZeroPage();
+    void oraZeroPageX();
+    void oraAbsolute();
+    void oraAbsoluteX();
+    void oraAbsoluteY();
+    void oraIndexedIndirect();
+    void oraIndirectIndexed();
 
     void setNZ(uint8_t reg);
     void setVC(uint8_t V, uint8_t C);

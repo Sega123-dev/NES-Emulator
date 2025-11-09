@@ -1267,6 +1267,93 @@ void CPU::eorIndirectIndexed()
     A = A ^ value;
     setNZ(A);
 }
+void CPU::oraImmediate()
+{
+    uint8_t value = bus->read(pc++);
+    A = A | value;
+    setNZ(A);
+}
+void CPU::oraZeroPage()
+{
+    uint8_t addr = bus->read(pc++);
+    uint8_t value = bus->read(addr);
+
+    A = A | value;
+    setNZ(A);
+}
+void CPU::oraZeroPageX()
+{
+    uint8_t addr = bus->read(pc++);
+    uint8_t value = bus->read((addr + X) & 0xFF);
+    A = A | value;
+    setNZ(A);
+}
+void CPU::oraAbsolute()
+{
+    uint8_t lowByte = bus->read(pc++);
+    uint8_t highByte = bus->read(pc++);
+
+    uint16_t finalAddr = (highByte << 8) | lowByte;
+
+    uint8_t value = bus->read(finalAddr);
+    A = A | value;
+    setNZ(A);
+}
+void CPU::oraAbsoluteX()
+{
+    uint8_t lowByte = bus->read(pc++);
+    uint8_t highByte = bus->read(pc++);
+
+    uint16_t finalAddr = (highByte << 8) | lowByte;
+
+    if ((finalAddr & 0xFF00) != ((finalAddr + X) & 0xFF00))
+        cycles++;
+
+    uint8_t value = bus->read(finalAddr + X);
+    A = A | value;
+    setNZ(A);
+}
+void CPU::oraAbsoluteY()
+{
+    uint8_t lowByte = bus->read(pc++);
+    uint8_t highByte = bus->read(pc++);
+
+    uint16_t finalAddr = (highByte << 8) | lowByte;
+
+    if ((finalAddr & 0xFF00) != ((finalAddr + Y) & 0xFF00))
+        cycles++;
+
+    uint8_t value = bus->read(finalAddr + Y);
+    A = A | value;
+    setNZ(A);
+}
+void CPU::oraIndexedIndirect()
+{
+    uint8_t zp = bus->read(pc++);
+    uint8_t ptr = bus->read(zp + X) & 0xFF;
+    uint8_t lowByte = bus->read(ptr);
+    uint8_t highByte = bus->read((ptr + 1) & 0xFF);
+    uint16_t finalAddr = (highByte << 8) | lowByte;
+
+    uint8_t value = bus->read(finalAddr);
+    A = A | value;
+    setNZ(A);
+}
+void CPU::oraIndirectIndexed()
+{
+    uint8_t zp = bus->read(pc++);
+    uint8_t lowByte = bus->read(zp);
+    uint8_t highByte = bus->read((zp + 1) & 0xFF);
+    uint16_t finalAddr = (highByte << 8) | lowByte;
+
+    if ((finalAddr & 0xFF00) != ((finalAddr + Y) & 0xFF00))
+        cycles++;
+
+    uint8_t value = bus->read(finalAddr + Y);
+    A = A | value;
+    setNZ(A);
+}
+
 void CPU::clock()
 {
     if (cycles == 0)
