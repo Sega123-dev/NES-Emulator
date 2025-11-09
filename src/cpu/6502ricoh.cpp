@@ -1455,6 +1455,23 @@ void CPU::cpxAbsolute()
 
     compare(X, bus->read(finalAddr));
 }
+void CPU::cpyImmediate()
+{
+    compare(Y, bus->read(pc++));
+}
+void CPU::cpyZeroPage()
+{
+    uint8_t addr = bus->read(pc++);
+    compare(Y, bus->read(addr));
+}
+void CPU::cpyAbsolute()
+{
+    uint8_t lowByte = bus->read(pc++);
+    uint8_t highByte = bus->read(pc++);
+    uint16_t finalAddr = (highByte << 8) | lowByte;
+
+    compare(Y, bus->read(finalAddr));
+}
 void CPU::clock()
 {
     if (cycles == 0)
