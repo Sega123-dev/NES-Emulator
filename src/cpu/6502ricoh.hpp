@@ -189,6 +189,15 @@ public:
         table[0x19] = {"ORA", &CPU::oraAbsoluteY, AddressingMode::ABSOLUTE_Y, 4};
         table[0x01] = {"ORA", &CPU::oraIndexedIndirect, AddressingMode::INDEXED_INDIRECT, 6};
         table[0x11] = {"ORA", &CPU::oraIndirectIndexed, AddressingMode::INDIRECT_INDEXED, 5};
+
+        table[0xC9] = {"CMP", &CPU::cmpImmediate, AddressingMode::IMMEDIATE, 2};
+        table[0xC5] = {"CMP", &CPU::cmpZeroPage, AddressingMode::ZERO_PAGE, 3};
+        table[0xD5] = {"CMP", &CPU::cmpZeroPageX, AddressingMode::ZERO_PAGE_X, 4};
+        table[0xCD] = {"CMP", &CPU::cmpAbsolute, AddressingMode::ABSOLUTE, 4};
+        table[0xDD] = {"CMP", &CPU::cmpAbsoluteX, AddressingMode::ABSOLUTE_X, 4};
+        table[0xD9] = {"CMP", &CPU::cmpAbsoluteY, AddressingMode::ABSOLUTE_Y, 4};
+        table[0xC1] = {"CMP", &CPU::cmpIndexedIndirect, AddressingMode::INDEXED_INDIRECT, 6};
+        table[0xD1] = {"CMP", &CPU::cmpIndirectIndexed, AddressingMode::INDIRECT_INDEXED, 5};
     };
     uint8_t dataBus, A, X, Y, P, sp, cycles, opState;
     uint16_t pc;
@@ -340,6 +349,16 @@ public:
     void oraIndexedIndirect();
     void oraIndirectIndexed();
 
+    void cmpImmediate();
+    void cmpZeroPage();
+    void cmpZeroPageX();
+    void cmpAbsolute();
+    void cmpAbsoluteX();
+    void cmpAbsoluteY();
+    void cmpIndexedIndirect();
+    void cmpIndirectIndexed();
+
     void setNZ(uint8_t reg);
     void setVC(uint8_t V, uint8_t C);
+    void compare(uint8_t reg, uint8_t value);
 };

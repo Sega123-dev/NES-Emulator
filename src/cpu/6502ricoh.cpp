@@ -29,6 +29,22 @@ void CPU::setVC(uint8_t V, uint8_t C)
         P &= ~0x40;
 }
 
+void CPU::compare(uint8_t reg, uint8_t value)
+{
+    if (reg >= value)
+        P |= 0x01 << 0;
+    else
+        P &= ~(0x01 << 0);
+    if (reg == value)
+        P |= 0x01 << 1;
+    else
+        P &= ~(0x01 << 1);
+    if ((((int16_t)reg - int16_t(value))) & 0x80)
+        P |= 0x01 << 7;
+    else
+        P &= ~(0x01 << 7);
+}
+
 // REST OF THE CPU
 
 void CPU::reset()
@@ -1353,7 +1369,10 @@ void CPU::oraIndirectIndexed()
     A = A | value;
     setNZ(A);
 }
-
+void CPU::cmpImmediate()
+{
+    uint8_t value = bus->read(pc++);
+}
 void CPU::clock()
 {
     if (cycles == 0)
