@@ -198,6 +198,10 @@ public:
         table[0xD9] = {"CMP", &CPU::cmpAbsoluteY, AddressingMode::ABSOLUTE_Y, 4};
         table[0xC1] = {"CMP", &CPU::cmpIndexedIndirect, AddressingMode::INDEXED_INDIRECT, 6};
         table[0xD1] = {"CMP", &CPU::cmpIndirectIndexed, AddressingMode::INDIRECT_INDEXED, 5};
+
+        table[0xE0] = {"CPX", &CPU::cpxImmediate, AddressingMode::IMMEDIATE, 2};
+        table[0xE4] = {"CPX", &CPU::cpxZeroPage, AddressingMode::ZERO_PAGE, 3};
+        table[0xEC] = {"CPX", &CPU::cpxAbsolute, AddressingMode::ABSOLUTE, 4};
     };
     uint8_t dataBus, A, X, Y, P, sp, cycles, opState;
     uint16_t pc;
@@ -357,6 +361,10 @@ public:
     void cmpAbsoluteY();
     void cmpIndexedIndirect();
     void cmpIndirectIndexed();
+
+    void cpxImmediate();
+    void cpxZeroPage();
+    void cpxAbsolute();
 
     void setNZ(uint8_t reg);
     void setVC(uint8_t V, uint8_t C);

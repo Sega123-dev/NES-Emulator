@@ -1438,6 +1438,23 @@ void CPU::cmpIndirectIndexed()
 
     compare(A, bus->read(finalAddr + Y));
 }
+void CPU::cpxImmediate()
+{
+    compare(X, bus->read(pc++));
+}
+void CPU::cpxZeroPage()
+{
+    uint8_t addr = bus->read(pc++);
+    compare(X, bus->read(addr));
+}
+void CPU::cpxAbsolute()
+{
+    uint8_t lowByte = bus->read(pc++);
+    uint8_t highByte = bus->read(pc++);
+    uint16_t finalAddr = (highByte << 8) | lowByte;
+
+    compare(X, bus->read(finalAddr));
+}
 void CPU::clock()
 {
     if (cycles == 0)
