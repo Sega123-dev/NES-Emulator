@@ -206,6 +206,12 @@ public:
         table[0xC0] = {"CPY", &CPU::cpyImmediate, AddressingMode::IMMEDIATE, 2};
         table[0xC4] = {"CPY", &CPU::cpyZeroPage, AddressingMode::ZERO_PAGE, 3};
         table[0xCC] = {"CPY", &CPU::cpyAbsolute, AddressingMode::ABSOLUTE, 4};
+
+        table[0x0A] = {"ASL", &CPU::aslAccumulator, AddressingMode::ACCUMULATOR, 2};
+        table[0x06] = {"ASL", &CPU::aslZeroPage, AddressingMode::ZERO_PAGE, 5};
+        table[0x16] = {"ASL", &CPU::aslZeroPageX, AddressingMode::ZERO_PAGE_X, 6};
+        table[0x0E] = {"ASL", &CPU::aslAbsolute, AddressingMode::ABSOLUTE, 6};
+        table[0x1E] = {"ASL", &CPU::aslAbsoluteX, AddressingMode::ABSOLUTE_X, 7};
     };
     uint8_t dataBus, A, X, Y, P, sp, cycles, opState;
     uint16_t pc;
@@ -373,6 +379,12 @@ public:
     void cpyImmediate();
     void cpyZeroPage();
     void cpyAbsolute();
+
+    void aslAccumulator();
+    void aslZeroPage();
+    void aslZeroPageX();
+    void aslAbsolute();
+    void aslAbsoluteX();
 
     void setNZ(uint8_t reg);
     void setVC(uint8_t V, uint8_t C);

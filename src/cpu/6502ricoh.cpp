@@ -1472,6 +1472,89 @@ void CPU::cpyAbsolute()
 
     compare(Y, bus->read(finalAddr));
 }
+void CPU::aslAccumulator()
+{
+    if (A & 0x80)
+    {
+        P |= 0x01;
+    }
+    else
+    {
+        P &= ~0x01;
+    }
+    A = A <<= 1;
+    setNZ(A);
+}
+void CPU::aslZeroPage()
+{
+    uint8_t addr = bus->read(pc++);
+    uint8_t value = bus->read(addr);
+    if (value & 0x80)
+    {
+        P |= 0x01;
+    }
+    else
+    {
+        P &= ~0x01;
+    }
+    value = value <<= 1;
+    bus->write(addr, value);
+    setNZ(value);
+}
+void CPU::aslZeroPageX()
+{
+    uint8_t addr = bus->read(pc++);
+    uint8_t value = bus->read((addr + X) & 0xFF);
+    if (value & 0x80)
+    {
+        P |= 0x01;
+    }
+    else
+    {
+        P &= ~0x01;
+    }
+    value = value <<= 1;
+    bus->write((addr + X) & 0xFF, value);
+    setNZ(value);
+}
+void CPU::aslAbsolute()
+{
+    uint8_t low = bus->read(pc++);
+    uint8_t high = bus->read(pc++);
+
+    uint16_t finalAddr = (high << 8) | low;
+    uint8_t value = bus->read(finalAddr);
+    if (value & 0x80)
+    {
+        P |= 0x01;
+    }
+    else
+    {
+        P &= ~0x01;
+    }
+    value = value <<= 1;
+    bus->write(finalAddr, value);
+    setNZ(value);
+}
+void CPU::aslAbsoluteX()
+{
+    uint8_t low = bus->read(pc++);
+    uint8_t high = bus->read(pc++);
+
+    uint16_t finalAddr = (high << 8) | low;
+    uint8_t value = bus->read(finalAddr + X);
+    if (value & 0x80)
+    {
+        P |= 0x01;
+    }
+    else
+    {
+        P &= ~0x01;
+    }
+    value = value <<= 1;
+    bus->write(finalAddr + X, value);
+    setNZ(value);
+}
 void CPU::clock()
 {
     if (cycles == 0)
