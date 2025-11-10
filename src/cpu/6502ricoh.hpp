@@ -212,6 +212,12 @@ public:
         table[0x16] = {"ASL", &CPU::aslZeroPageX, AddressingMode::ZERO_PAGE_X, 6};
         table[0x0E] = {"ASL", &CPU::aslAbsolute, AddressingMode::ABSOLUTE, 6};
         table[0x1E] = {"ASL", &CPU::aslAbsoluteX, AddressingMode::ABSOLUTE_X, 7};
+
+        table[0x4A] = {"LSR", &CPU::lsrAccumulator, AddressingMode::ACCUMULATOR, 2};
+        table[0x46] = {"LSR", &CPU::lsrZeroPage, AddressingMode::ZERO_PAGE, 5};
+        table[0x56] = {"LSR", &CPU::lsrZeroPageX, AddressingMode::ZERO_PAGE_X, 6};
+        table[0x4E] = {"LSR", &CPU::lsrAbsolute, AddressingMode::ABSOLUTE, 6};
+        table[0x5E] = {"LSR", &CPU::lsrAbsoluteX, AddressingMode::ABSOLUTE_X, 7};
     };
     uint8_t dataBus, A, X, Y, P, sp, cycles, opState;
     uint16_t pc;
@@ -385,6 +391,12 @@ public:
     void aslZeroPageX();
     void aslAbsolute();
     void aslAbsoluteX();
+
+    void lsrAccumulator();
+    void lsrZeroPage();
+    void lsrZeroPageX();
+    void lsrAbsolute();
+    void lsrAbsoluteX();
 
     void setNZ(uint8_t reg);
     void setVC(uint8_t V, uint8_t C);

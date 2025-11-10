@@ -1555,6 +1555,112 @@ void CPU::aslAbsoluteX()
     bus->write(finalAddr + X, value);
     setNZ(value);
 }
+void CPU::lsrAccumulator()
+{
+    if (A & 0x01)
+        P |= 0x01;
+    else
+        P &= ~0x01;
+
+    A >>= 1;
+    P &= ~0x80;
+
+    if (A == 0)
+        P |= 0x02;
+    else
+        P &= ~0x02;
+}
+
+void CPU::lsrZeroPage()
+{
+    uint8_t addr = bus->read(pc++);
+    uint8_t value = bus->read(addr);
+
+    if (value & 0x01)
+        P |= 0x01;
+    else
+        P &= ~0x01;
+
+    value >>= 1;
+    P &= ~0x80;
+
+    bus->write(addr, value);
+
+    if (value == 0)
+        P |= 0x02;
+    else
+        P &= ~0x02;
+}
+
+void CPU::lsrZeroPageX()
+{
+    uint8_t addr = bus->read(pc++);
+    uint8_t effAddr = (addr + X) & 0xFF;
+    uint8_t value = bus->read(effAddr);
+
+    if (value & 0x01)
+        P |= 0x01;
+    else
+        P &= ~0x01;
+
+    value >>= 1;
+    P &= ~0x80;
+
+    bus->write(effAddr, value);
+
+    if (value == 0)
+        P |= 0x02;
+    else
+        P &= ~0x02;
+}
+
+void CPU::lsrAbsolute()
+{
+    uint8_t low = bus->read(pc++);
+    uint8_t high = bus->read(pc++);
+    uint16_t finalAddr = (high << 8) | low;
+    uint8_t value = bus->read(finalAddr);
+
+    if (value & 0x01)
+        P |= 0x01;
+    else
+        P &= ~0x01;
+
+    value >>= 1;
+    P &= ~0x80;
+
+    bus->write(finalAddr, value);
+
+    if (value == 0)
+        P |= 0x02;
+    else
+        P &= ~0x02;
+}
+
+void CPU::lsrAbsoluteX()
+{
+    uint8_t low = bus->read(pc++);
+    uint8_t high = bus->read(pc++);
+    uint16_t finalAddr = (high << 8) | low;
+    uint16_t effAddr = finalAddr + X;
+    uint8_t value = bus->read(effAddr);
+
+    if (value & 0x01)
+        P |= 0x01;
+    else
+        P &= ~0x01;
+
+    value >>= 1;
+    P &= ~0x80;
+
+    bus->write(effAddr, value);
+
+    if (value == 0)
+        P |= 0x02;
+    else
+        P &= ~0x02;
+}
+
 void CPU::clock()
 {
     if (cycles == 0)
