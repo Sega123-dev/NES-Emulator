@@ -1756,6 +1756,117 @@ void CPU::rorAbsoluteX()
     bus->write(addr + X, value);
     setNZ(value);
 }
+void CPU::rolAccumulator()
+{
+    uint8_t oldCarry = P & 0x01;
+    uint8_t newCarry = (A & 0x80) >> 7;
+
+    A <<= 1;
+
+    if (oldCarry)
+        A |= 0x01;
+
+    if (newCarry)
+        P |= 0x01;
+    else
+        P &= ~0x01;
+
+    setNZ(A);
+}
+
+void CPU::rolZeroPage()
+{
+    uint8_t zpAddr = bus->read(pc++);
+    uint8_t value = bus->read(zpAddr);
+
+    uint8_t oldCarry = P & 0x01;
+    uint8_t newCarry = (value & 0x80) >> 7;
+
+    value <<= 1;
+
+    if (oldCarry)
+        value |= 0x01;
+
+    if (newCarry)
+        P |= 0x01;
+    else
+        P &= ~0x01;
+
+    bus->write(zpAddr, value);
+    setNZ(value);
+}
+
+void CPU::rolZeroPageX()
+{
+    uint8_t zpAddr = bus->read(pc++);
+    uint8_t addr = (zpAddr + X) & 0xFF;
+    uint8_t value = bus->read(addr);
+
+    uint8_t oldCarry = P & 0x01;
+    uint8_t newCarry = (value & 0x80) >> 7;
+
+    value <<= 1;
+
+    if (oldCarry)
+        value |= 0x01;
+
+    if (newCarry)
+        P |= 0x01;
+    else
+        P &= ~0x01;
+
+    bus->write(addr, value);
+    setNZ(value);
+}
+
+void CPU::rolAbsolute()
+{
+    uint8_t low = bus->read(pc++);
+    uint8_t high = bus->read(pc++);
+    uint16_t addr = (high << 8) | low;
+    uint8_t value = bus->read(addr);
+
+    uint8_t oldCarry = P & 0x01;
+    uint8_t newCarry = (value & 0x80) >> 7;
+
+    value <<= 1;
+
+    if (oldCarry)
+        value |= 0x01;
+
+    if (newCarry)
+        P |= 0x01;
+    else
+        P &= ~0x01;
+
+    bus->write(addr, value);
+    setNZ(value);
+}
+
+void CPU::rolAbsoluteX()
+{
+    uint8_t low = bus->read(pc++);
+    uint8_t high = bus->read(pc++);
+    uint16_t addr = ((high << 8) | low) + X;
+    uint8_t value = bus->read(addr);
+
+    uint8_t oldCarry = P & 0x01;
+    uint8_t newCarry = (value & 0x80) >> 7;
+
+    value <<= 1;
+
+    if (oldCarry)
+        value |= 0x01;
+
+    if (newCarry)
+        P |= 0x01;
+    else
+        P &= ~0x01;
+
+    bus->write(addr, value);
+    setNZ(value);
+}
+
 void CPU::clock()
 {
     if (cycles == 0)

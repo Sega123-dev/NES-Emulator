@@ -224,6 +224,12 @@ public:
         table[0x76] = {"ROR", &CPU::rorZeroPageX, AddressingMode::ZERO_PAGE_X, 6};
         table[0x6E] = {"ROR", &CPU::rorAbsolute, AddressingMode::ABSOLUTE, 6};
         table[0x7E] = {"ROR", &CPU::rorAbsoluteX, AddressingMode::ABSOLUTE_X, 7};
+
+        table[0x2A] = {"ROL", &CPU::rolAccumulator, AddressingMode::ACCUMULATOR, 2};
+        table[0x26] = {"ROL", &CPU::rolZeroPage, AddressingMode::ZERO_PAGE, 5};
+        table[0x36] = {"ROL", &CPU::rolZeroPageX, AddressingMode::ZERO_PAGE_X, 6};
+        table[0x2E] = {"ROL", &CPU::rolAbsolute, AddressingMode::ABSOLUTE, 6};
+        table[0x3E] = {"ROL", &CPU::rolAbsoluteX, AddressingMode::ABSOLUTE_X, 7};
     };
     uint8_t dataBus, A, X, Y, P, sp, cycles, opState;
     uint16_t pc;
@@ -409,6 +415,12 @@ public:
     void rorZeroPageX();
     void rorAbsolute();
     void rorAbsoluteX();
+
+    void rolAccumulator();
+    void rolZeroPage();
+    void rolZeroPageX();
+    void rolAbsolute();
+    void rolAbsoluteX();
 
     void setNZ(uint8_t reg);
     void setVC(uint8_t V, uint8_t C);
