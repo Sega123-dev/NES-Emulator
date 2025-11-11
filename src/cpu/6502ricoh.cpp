@@ -1570,7 +1570,6 @@ void CPU::lsrAccumulator()
     else
         P &= ~0x02;
 }
-
 void CPU::lsrZeroPage()
 {
     uint8_t addr = bus->read(pc++);
@@ -1591,7 +1590,6 @@ void CPU::lsrZeroPage()
     else
         P &= ~0x02;
 }
-
 void CPU::lsrZeroPageX()
 {
     uint8_t addr = bus->read(pc++);
@@ -1613,7 +1611,6 @@ void CPU::lsrZeroPageX()
     else
         P &= ~0x02;
 }
-
 void CPU::lsrAbsolute()
 {
     uint8_t low = bus->read(pc++);
@@ -1636,7 +1633,6 @@ void CPU::lsrAbsolute()
     else
         P &= ~0x02;
 }
-
 void CPU::lsrAbsoluteX()
 {
     uint8_t low = bus->read(pc++);
@@ -1660,7 +1656,106 @@ void CPU::lsrAbsoluteX()
     else
         P &= ~0x02;
 }
+void CPU::rorAccumulator()
+{
+    uint8_t oldCarry = P & 0x01;
+    uint8_t newCarry = A & 0x01;
 
+    A >>= 1;
+
+    if (oldCarry)
+        A |= 0x80;
+
+    if (newCarry)
+        P |= 0x01;
+    else
+        P &= ~0x01;
+    setNZ(A);
+}
+void CPU::rorZeroPage()
+{
+    uint8_t zpAddr = bus->read(pc++);
+    uint8_t value = bus->read(zpAddr);
+    uint8_t oldC = P & 0x01;
+    uint8_t newC = value & 0x01;
+
+    value >>= 1;
+
+    if (oldC)
+        value |= 0x80;
+
+    if (newC)
+        P |= 0x01;
+    else
+        P &= ~0x01;
+    bus->write(zpAddr, value);
+    setNZ(value);
+}
+void CPU::rorZeroPageX()
+{
+    uint8_t zpAddr = bus->read(pc++);
+    uint8_t value = bus->read((zpAddr + X) & 0xFF);
+    uint8_t oldC = P & 0x01;
+    uint8_t newC = value & 0x01;
+
+    value >>= 1;
+
+    if (oldC)
+        value |= 0x80;
+
+    if (newC)
+        P |= 0x01;
+    else
+        P &= ~0x01;
+    bus->write((zpAddr + X) & 0xFF, value);
+    setNZ(value);
+}
+void CPU::rorAbsolute()
+{
+    uint8_t low = bus->read(pc++);
+    uint8_t high = bus->read(pc++);
+
+    uint16_t addr = (high << 8) | low;
+    uint8_t value = bus->read(addr);
+
+    uint8_t oldC = P & 0x01;
+    uint8_t newC = value & 0x01;
+
+    value >>= 1;
+
+    if (oldC)
+        value |= 0x80;
+
+    if (newC)
+        P |= 0x01;
+    else
+        P &= ~0x01;
+    bus->write(addr, value);
+    setNZ(value);
+}
+void CPU::rorAbsoluteX()
+{
+    uint8_t low = bus->read(pc++);
+    uint8_t high = bus->read(pc++);
+
+    uint16_t addr = (high << 8) | low;
+    uint8_t value = bus->read(addr + X);
+
+    uint8_t oldC = P & 0x01;
+    uint8_t newC = value & 0x01;
+
+    value >>= 1;
+
+    if (oldC)
+        value |= 0x80;
+
+    if (newC)
+        P |= 0x01;
+    else
+        P &= ~0x01;
+    bus->write(addr + X, value);
+    setNZ(value);
+}
 void CPU::clock()
 {
     if (cycles == 0)
