@@ -2,50 +2,29 @@
 #include <cstdint>
 #include <cstdlib>
 #include <vector>
-class Mapper
+#include "nrom.hpp"
+
+NROM::NROM(const std::vector<uint8_t> &prgData, const std::vector<uint8_t> &chrData)
 {
-public:
-    virtual uint8_t cpuRead(uint16_t addr) = 0;
-    virtual void cpuWrite(uint16_t addr, uint8_t data) = 0;
+    prg = prgData;
+    chr = chrData;
 
-    virtual uint8_t ppuRead(uint16_t addr) = 0;
-    virtual void ppuWrite(uint16_t addr, uint8_t data) = 0;
+    if (prg.size() == 0x4000)
+        prg16kb = true;
+    else
+        prg16kb = false;
 
-    virtual ~Mapper() = default;
-};
+    if (chr.size() == 0)
+        chr8kb = false;
+    else
+        chr8kb = true;
 
-class NROM : public Mapper
-{
-public:
-    std::vector<uint8_t> prg;
-    std::vector<uint8_t> chr;
-    std::vector<uint8_t> prgRam;
-    bool prg16kb;
-    bool chr8kb; // Checks if it's either CHR-RAM(0kb) or CHR-ROM(8kb)
-    NROM(const std::vector<uint8_t> &prgData, const std::vector<uint8_t> &chrData)
-    {
-        prg = prgData;
-        chr = chrData;
+    if (!chr8kb)
+        chr.resize(0x2000);
 
-        if (prg.size() == 0x4000)
-            prg16kb = true;
-        else
-            prg16kb = false;
+    prgRam.resize(0x2000);
+}
 
-        if (chr.size() == 0)
-            chr8kb = false;
-        else
-            chr8kb = true;
-
-        if (!chr8kb)
-            chr.resize(0x2000);
-
-        prgRam.resize(0x2000);
-    }
-    uint8_t cpuRead(uint16_t addr) override;
-    uint8_t ppuRead(uint16_t addr) override;
-    void ppuWrite(uint16_t addr, uint8_t data) override;
-};
 uint8_t NROM::cpuRead(uint16_t addr)
 {
     if (addr >= 0x6000 && addr <= 0x7FFF)
@@ -75,4 +54,9 @@ void NROM::ppuWrite(uint16_t addr, uint8_t data)
     {
         chr[addr] = data;
     }
+}
+void NROM::cpuWrite(uint16_t addr, uint8_t data)
+{
+    if (addr >= 0x6000 && addr <= 0x7FFF)
+        prgRam[addr - 0x6000] = data;
 }
