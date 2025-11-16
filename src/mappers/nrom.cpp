@@ -4,6 +4,12 @@
 #include <vector>
 #include "nrom.hpp"
 
+enum Mirroring
+{
+    HORIZONTAL,
+    VERTICAL
+};
+Mirroring mirroring;
 NROM::NROM(const std::vector<uint8_t> &prgData, const std::vector<uint8_t> &chrData)
 {
     prg = prgData;
@@ -59,4 +65,16 @@ void NROM::cpuWrite(uint16_t addr, uint8_t data)
 {
     if (addr >= 0x6000 && addr <= 0x7FFF)
         prgRam[addr - 0x6000] = data;
+}
+uint16_t mirroringInfo(uint16_t addr)
+{
+    addr = addr & 0x0FFF;
+    if (mirroring == VERTICAL)
+    {
+        return addr & 0x800;
+    }
+    else if (mirroring == HORIZONTAL)
+    {
+        return (addr / 2) & 0x400;
+    }
 }

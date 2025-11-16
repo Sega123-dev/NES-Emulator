@@ -29,5 +29,5 @@ public:
     uint8_t cpuRead(uint16_t addr) override;
     uint8_t ppuRead(uint16_t addr) override;
     void ppuWrite(uint16_t addr, uint8_t data) override;
-    void NROM::cpuWrite(uint16_t addr, uint8_t data) override;
+    void cpuWrite(uint16_t addr, uint8_t data) override;
 };
