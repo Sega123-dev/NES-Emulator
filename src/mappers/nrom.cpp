@@ -78,3 +78,4 @@ uint16_t mirroringInfo(uint16_t addr)
         return (addr / 2) & 0x400;
     }
 }
+// NROM simplified,may not contain enough PPU mirroring features
