@@ -17,6 +17,15 @@ public:
 
 class NROM : public Mapper
 {
+    enum Mirroring
+    {
+        HORIZONTAL,
+        VERTICAL
+    };
+
+private:
+    Mirroring mirroring = HORIZONTAL;
+
 public:
     std::vector<uint8_t> prg;
     std::vector<uint8_t> chr;
@@ -29,4 +38,6 @@ public:
     uint8_t ppuRead(uint16_t addr) override;
     void ppuWrite(uint16_t addr, uint8_t data) override;
     void cpuWrite(uint16_t addr, uint8_t data) override;
+
+    uint16_t mirror(uint16_t addr); // $2000-$2FFF
 };

@@ -3,13 +3,6 @@
 #include <cstdlib>
 #include <vector>
 #include "nrom.hpp"
-
-enum Mirroring
-{
-    HORIZONTAL,
-    VERTICAL
-};
-Mirroring mirroring;
 NROM::NROM(const std::vector<uint8_t> &prgData, const std::vector<uint8_t> &chrData)
 {
     prg = prgData;
@@ -52,6 +45,12 @@ uint8_t NROM::ppuRead(uint16_t addr)
     {
         return chr[addr];
     }
+    else if (addr >= 0x2000 && addr < 0x3F00)
+    {
+        uint16_t mirroredAddr = mirror(addr);
+        // Later VRAM implemented in the bus
+        return 0;
+    }
     return 0;
 }
 void NROM::ppuWrite(uint16_t addr, uint8_t data)
@@ -60,22 +59,26 @@ void NROM::ppuWrite(uint16_t addr, uint8_t data)
     {
         chr[addr] = data;
     }
+    else if (addr >= 0x2000 && addr < 0x3F00) // nametables
+    {
+        uint16_t mirroredAddr = mirror(addr);
+    }
 }
 void NROM::cpuWrite(uint16_t addr, uint8_t data)
 {
     if (addr >= 0x6000 && addr <= 0x7FFF)
         prgRam[addr - 0x6000] = data;
 }
-uint16_t mirroringInfo(uint16_t addr)
+uint16_t NROM::mirror(uint16_t addr)
 {
     addr = addr & 0x0FFF;
     if (mirroring == VERTICAL)
     {
-        return addr & 0x800;
+        return addr % 0x800;
     }
     else if (mirroring == HORIZONTAL)
     {
-        return (addr / 2) & 0x400;
+        return (addr % 0x400) + (addr / 0x800) * 0x400;
     }
 }
 // NROM simplified,may not contain enough PPU mirroring features
