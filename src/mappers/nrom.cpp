@@ -81,4 +81,5 @@ uint16_t NROM::mirror(uint16_t addr)
         return (addr % 0x400) + (addr / 0x800) * 0x400;
     }
 }
-// NROM simplified,may not contain enough PPU mirroring features
+
+// NROM simplified,no nametables,VRAM and CHR/PRG ROM reading

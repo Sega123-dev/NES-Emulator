@@ -2,12 +2,8 @@
 #include <iostream>
 #include <cstdint>
 #include <vector>
-
-MMC1::MMC1(const std::vector<uint8_t> &prgData, const std::vector<uint8_t> &chrData)
+void MMC1::reset()
 {
-    prg = prgData;
-    chr = chrData;
-
     shiftReg = 0;
     shiftCount = 0;
 
@@ -15,7 +11,14 @@ MMC1::MMC1(const std::vector<uint8_t> &prgData, const std::vector<uint8_t> &chrD
     chrBank0 = 0, chrBank1 = 0;
     prgBank = 0;
 
-    Mirroring mirroring = Mirroring::HORIZONTAL;
+    mirroring = Mirroring::HORIZONTAL;
+}
+MMC1::MMC1(const std::vector<uint8_t> &prgData, const std::vector<uint8_t> &chrData)
+{
+    prg = prgData;
+    chr = chrData;
+
+    reset();
 };
 void MMC1::cpuWrite(uint16_t addr, uint8_t value)
 {
@@ -100,7 +103,10 @@ uint8_t MMC1::ppuRead(uint16_t addr)
 }
 void MMC1::ppuWrite(uint16_t addr, uint8_t data)
 {
-    if (addr < 0x2000)
-        chr[addr] = data;
+    if (addr < 0x1000)
+        chr[(chrBank0 * 0x1000 + addr) % chr.size()] = data;
+    else if (addr < 0x2000)
+        chr[(chrBank1 * 0x1000 + (addr - 0x1000)) % chr.size()] = data;
 }
+
 // MMC1 simplified,may not contain enough PPU mirroring features
