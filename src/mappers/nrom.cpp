@@ -82,4 +82,4 @@ uint16_t NROM::mirror(uint16_t addr)
     }
 }
 
-// NROM simplified,no nametables,VRAM and CHR/PRG ROM reading
+// NROM simplified,no nametables,VRAM
