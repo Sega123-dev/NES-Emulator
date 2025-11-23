@@ -2,11 +2,6 @@
 #include <iostream>
 #include <cstdint>
 #include <vector>
-enum Mirroring
-{
-    VERTICAL,
-    HORIZONTAL
-};
 class Mapper
 {
 public:
@@ -57,5 +52,5 @@ private:
     bool irqReloadFlag;
     bool prevA12;
 
-    Mirroring mirroring = Mirroring::HORIZONTAL;
+    bool mirrorHorizontal;
 };

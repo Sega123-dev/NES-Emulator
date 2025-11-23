@@ -8,7 +8,7 @@ void MMC3::reset()
     bankSelect = 0;
     prgMode = 0;
     chrMode = 0;
-    mirroring = Mirroring::HORIZONTAL;
+    mirrorHorizontal = true;
     wramEnabled = false;
     wramWriteProtected = false;
     irqCounter = 0;
@@ -82,7 +82,90 @@ void MMC3::clockIRQ(int currentA12)
         else
             irqCounter--;
         if (irqEnabled && irqCounter == 0)
-            ; // skip
+            ; // skip for now
     }
     prevA12 = currentA12;
+}
+uint8_t MMC3::cpuRead(uint16_t addr)
+{
+    if (addr >= 0x6000 && addr <= 0x7FFF)
+    {
+        if (wramEnabled)
+        {
+            // no WRAM,skip for now
+        }
+    }
+
+    if (addr >= 0x8000)
+    {
+        uint8_t slot = (addr - 0x8000) / 0x2000;
+        uint8_t bankNumber = prgBankMap[slot];
+        uint8_t romIndex = bankNumber * 0x2000 + (addr % 0x2000);
+        return prg[romIndex];
+    }
+    return 0;
+}
+void MMC3::cpuWrite(uint16_t addr, uint8_t data)
+{
+    if (addr >= 0x6000 && addr <= 0x7FFF)
+    {
+        if (wramEnabled)
+        {
+            if (!wramWriteProtected)
+            {
+                // skip WRAM
+            }
+        }
+    }
+    else if (addr == 0x8000)
+    {
+        bankSelect = data & 0x07;
+        prgMode = (data & 0x40) >> 6;
+        chrMode = (data & 0x80) >> 7;
+
+        updateCHRBanks();
+        updatePRGBanks();
+    }
+    else if (addr == 0x8001)
+    {
+        bankRegister[bankSelect] = data;
+        if (bankSelect <= 5)
+            updateCHRBanks();
+
+        else if (bankSelect > 5)
+            updatePRGBanks();
+    }
+    else if (addr == 0xA000)
+    {
+        mirrorHorizontal = !(data & 0x01);
+    }
+    else if (addr == 0xA001)
+    {
+        wramEnabled = data & 0x80;
+        wramWriteProtected = data & 0x40;
+        if (wramEnabled)
+        {
+            if (!wramWriteProtected)
+            {
+                // No WRAM,skip wram write for now
+            }
+        }
+    }
+    else if (addr == 0xC000)
+    {
+        irqReloadValue = data;
+    }
+    else if (addr == 0xC001)
+    {
+        irqReloadFlag = true;
+    }
+    else if (addr == 0xE000)
+    {
+        irqEnabled = false;
+        // Later we need to clear irq in cpu
+    }
+    else if (addr == 0xE001)
+    {
+        irqEnabled = true;
+    }
 }
