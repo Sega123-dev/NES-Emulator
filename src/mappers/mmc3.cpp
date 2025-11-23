@@ -169,3 +169,85 @@ void MMC3::cpuWrite(uint16_t addr, uint8_t data)
         irqEnabled = true;
     }
 }
+uint8_t MMC3::ppuRead(uint16_t addr)
+{
+    if (addr >= 0x0000 && addr <= 0x1FFF)
+    {
+        uint8_t slot = addr / 0x400;
+        uint8_t bankNumber = chrBankMap[slot];
+        int bankSize;
+        if (slot <= 5)
+            bankSize = 0x400;
+        else
+            bankSize = 0x800;
+        uint8_t romIndex = bankNumber * bankSize + (addr % bankSize);
+        return chr[romIndex];
+    }
+    else if (addr >= 0x2000 && addr <= 0x3EFF)
+    {
+        addr = addr % 0x1000;
+        uint8_t ntIndex = addr / 0x400;
+        uint8_t vramIndex;
+        uint8_t offset = addr % 0x400;
+        if (mirrorHorizontal)
+        {
+            if (ntIndex == 0 || ntIndex == 1)
+                vramIndex = 0;
+            else
+                vramIndex = 1;
+        }
+        else
+        {
+            if (ntIndex == 0 || ntIndex == 2)
+                vramIndex = 0;
+            else
+                vramIndex = 1;
+        }
+        clockIRQ((addr & 0x1000) >> 12);
+        // No VRAM,skip VRAM read
+    }
+    else if (addr >= 0x3F00 && addr <= 0x3FFF)
+    {
+        // pass right now,no RAM pallete
+    }
+}
+void MMC3::ppuWrite(uint16_t addr, uint8_t data)
+{
+
+    if (addr >= 0x0000 && addr <= 0x1FFF)
+    {
+
+        uint8_t slot = addr / 0x400;
+        uint8_t bankNumber = chrBankMap[slot];
+        int bankSize = (slot <= 5) ? 0x400 : 0x800;
+
+        int index = bankNumber * bankSize + (addr % bankSize);
+        chr[index] = data;
+
+        clockIRQ((addr & 0x1000) >> 12);
+    }
+
+    else if (addr >= 0x2000 && addr <= 0x3EFF)
+    {
+        addr = addr % 0x1000;
+        uint8_t ntIndex = addr / 0x400;
+        uint8_t offset = addr % 0x400;
+        uint8_t vramIndex;
+
+        if (mirrorHorizontal)
+        {
+            vramIndex = (ntIndex < 2) ? 0 : 1;
+        }
+        else
+        {
+            vramIndex = (ntIndex % 2 == 0) ? 0 : 1;
+        }
+        // skip
+    }
+
+    else if (addr >= 0x3F00 && addr <= 0x3FFF)
+    {
+        // skip
+        uint8_t paletteAddr = addr % 0x20;
+    }
+}
