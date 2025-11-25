@@ -1,4 +1,10 @@
 #include "reader.hpp"
+#include "NROM/nrom.hpp"
+#include "CNROM/cnrom.hpp"
+#include "UxROM/uxrom.hpp"
+#include "MMC1/mmc1.hpp"
+#include "MMC3/mmc3.hpp"
+
 #include <iostream>
 #include <cstdint>
 #include <fstream>
@@ -13,7 +19,7 @@ void dumpROM(const char *filename)
     headerBuffer.resize(16);
     if (rom.fail())
     {
-        std::cerr << "Failed to run ROM(Error:NotFound).";
+        std::cerr << "Failed to run ROM(Error:NotFound)." << '\n';
         return;
     }
     if (rom.read(headerBuffer.data(), 16))
@@ -57,9 +63,31 @@ void dumpROM(const char *filename)
                 CHR_ROM[i] = static_cast<uint8_t>(chrBuffer[i]);
             }
         }
+        rom.close();
+        Mapper *chooseMapper();
     }
     else
     {
-        std::cerr << "This file is not NES ROM file.Please provide a file that is using iNES format.";
+        std::cerr << "This file is not NES ROM file.Please provide a file that is using iNES format." << '\n';
+    }
+}
+
+Mapper *chooseMapper()
+{
+    switch (mapperID)
+    {
+    case 0:
+        return new NROM(PRG_ROM, CHR_ROM);
+    case 1:
+        return new MMC1(PRG_ROM, CHR_ROM);
+    case 2:
+        return new UXROM(PRG_ROM, CHR_ROM);
+    case 3:
+        return new CNROM(PRG_ROM, CHR_ROM);
+    case 4:
+        return new MMC3(PRG_ROM, CHR_ROM);
+    default:
+        std::cerr << "NEScape does not support mapper " << mapperID << '\n';
+        return nullptr;
     }
 }

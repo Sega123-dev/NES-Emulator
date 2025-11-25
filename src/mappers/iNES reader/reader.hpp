@@ -4,7 +4,10 @@
 #include <iostream>
 #include <vector>
 
+class Mapper;
+
 void dumpROM(const char *filename);
+Mapper *chooseMapper();
 
 __uint128_t header[16];
 int prgRomSize; // 16KB bank
