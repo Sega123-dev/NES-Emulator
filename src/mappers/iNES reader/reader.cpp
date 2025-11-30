@@ -64,7 +64,9 @@ void dumpROM(const char *filename)
             }
         }
         rom.close();
-        Mapper *chooseMapper();
+        Mapper *mapper = chooseMapper();
+        if (!mapper)
+            return;
     }
     else
     {

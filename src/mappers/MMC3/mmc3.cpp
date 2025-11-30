@@ -2,6 +2,7 @@
 #include <iostream>
 #include <cstdint>
 #include <vector>
+#include "bus/bus.hpp"
 
 void MMC3::reset()
 {
@@ -82,8 +83,9 @@ void MMC3::clockIRQ(int currentA12)
         else
             irqCounter--;
         if (irqEnabled && irqCounter == 0)
-            ; // skip for now
+            bus->cpu.clearIRQ();
     }
+
     prevA12 = currentA12;
 }
 uint8_t MMC3::cpuRead(uint16_t addr)
@@ -162,7 +164,7 @@ void MMC3::cpuWrite(uint16_t addr, uint8_t data)
     else if (addr == 0xE000)
     {
         irqEnabled = false;
-        // Later we need to clear irq in cpu
+        bus->cpu.clearIRQ();
     }
     else if (addr == 0xE001)
     {
@@ -250,4 +252,8 @@ void MMC3::ppuWrite(uint16_t addr, uint8_t data)
         // skip
         uint8_t paletteAddr = addr % 0x20;
     }
+}
+void MMC3::connectBus(Bus *b)
+{
+    bus = b;
 }

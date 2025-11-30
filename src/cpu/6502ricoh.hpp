@@ -425,4 +425,5 @@ public:
     void setNZ(uint8_t reg);
     void setVC(uint8_t V, uint8_t C);
     void compare(uint8_t reg, uint8_t value);
+    void clearIRQ();
 };

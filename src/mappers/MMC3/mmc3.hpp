@@ -2,6 +2,8 @@
 #include <iostream>
 #include <cstdint>
 #include <vector>
+#include "../bus/bus.hpp"
+class Bus;
 class Mapper
 {
 public:
@@ -16,6 +18,8 @@ public:
 class MMC3 : public Mapper
 {
 public:
+    Bus *bus = nullptr;
+    MMC3() = default;
     MMC3(std::vector<uint8_t> &prgData, std::vector<uint8_t> &chrData);
 
     uint8_t cpuRead(uint16_t addr) override;
@@ -28,6 +32,7 @@ public:
     void updateCHRBanks();
     void clockIRQ(int currentA12);
     void reset();
+    void connectBus(Bus *b);
 
 private:
     std::vector<uint8_t> chr;
@@ -51,6 +56,4 @@ private:
     bool irqEnabled;
     bool irqReloadFlag;
     bool prevA12;
-
-    bool mirrorHorizontal;
 };
