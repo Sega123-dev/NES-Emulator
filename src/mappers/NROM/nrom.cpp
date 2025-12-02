@@ -80,5 +80,6 @@ uint16_t NROM::mirror(uint16_t addr)
     {
         return (addr % 0x400) + (addr / 0x800) * 0x400;
     }
+    return 0;
 }
 // NROM simplified,no nametables,VRAM

@@ -1,7 +1,7 @@
 #pragma once
 #include "../cpu/6502ricoh.hpp"
 #include <cstdint>
-#include "../mappers/MMC3/mmc3.hpp"
+class MMC3;
 class Bus
 {
 public:
@@ -10,6 +10,6 @@ public:
     uint8_t read(uint16_t addr);
 
     CPU cpu;
-    MMC3 mmc3;
+    MMC3 *mmc3 = nullptr;
     uint8_t ram[2048];
 };

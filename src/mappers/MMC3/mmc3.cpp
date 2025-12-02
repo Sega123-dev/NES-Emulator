@@ -2,7 +2,7 @@
 #include <iostream>
 #include <cstdint>
 #include <vector>
-#include "bus/bus.hpp"
+#include "../../bus/bus.hpp"
 
 void MMC3::reset()
 {
@@ -212,6 +212,7 @@ uint8_t MMC3::ppuRead(uint16_t addr)
     {
         // pass right now,no RAM pallete
     }
+    return 0;
 }
 void MMC3::ppuWrite(uint16_t addr, uint8_t data)
 {

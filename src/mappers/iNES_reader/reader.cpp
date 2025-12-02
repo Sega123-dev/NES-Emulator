@@ -1,14 +1,26 @@
 #include "reader.hpp"
-#include "NROM/nrom.hpp"
-#include "CNROM/cnrom.hpp"
-#include "UxROM/uxrom.hpp"
-#include "MMC1/mmc1.hpp"
-#include "MMC3/mmc3.hpp"
+#include "../NROM/nrom.hpp"
+#include "../CNROM/cnrom.hpp"
+#include "../UxROM/uxrom.hpp"
+#include "../MMC1/mmc1.hpp"
+#include "../MMC3/mmc3.hpp"
 
 #include <iostream>
 #include <cstdint>
 #include <fstream>
 #include <vector>
+
+uint8_t header[16];
+int prgRomSize;
+int chrRomSize;
+uint8_t flag6;
+uint8_t flag7;
+int mapperID;
+bool verticalMirroring;
+bool SRAM;
+bool fourScreenMirroring;
+std::vector<uint8_t> PRG_ROM;
+std::vector<uint8_t> CHR_ROM;
 
 void dumpROM(const char *filename)
 {
@@ -28,6 +40,7 @@ void dumpROM(const char *filename)
         {
             header[i] = static_cast<uint8_t>(headerBuffer[i]);
         }
+        std::cout << "Header parsed\n";
     }
     if (header[0] == 0x4E && header[1] == 0x45 && header[2] == 0x53 && header[3] == 0x1A)
     {
@@ -49,20 +62,16 @@ void dumpROM(const char *filename)
         if (trainer)
             rom.seekg(512, std::ios::cur);
 
-        if (rom.read(prgBuffer.data(), prgRomSize))
+                if (rom.read(prgBuffer.data(), prgRomSize))
         {
-            for (int i = 0; i < prgRomSize; i++)
-            {
-                PRG_ROM[i] = static_cast<uint8_t>(prgBuffer[i]);
-            }
+            PRG_ROM.assign(prgBuffer.begin(), prgBuffer.end());
         }
+        std::cout << "PRG_ROM parsed\n";
         if (rom.read(chrBuffer.data(), chrRomSize))
         {
-            for (int i = 0; i < chrRomSize; i++)
-            {
-                CHR_ROM[i] = static_cast<uint8_t>(chrBuffer[i]);
-            }
+            CHR_ROM.assign(chrBuffer.begin(), chrBuffer.end());
         }
+        std::cout << "CHR_ROM parsed\n";
         rom.close();
         Mapper *mapper = chooseMapper();
         if (!mapper)

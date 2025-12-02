@@ -39,4 +39,9 @@ uint8_t CNROM::ppuRead(uint16_t addr)
         uint16_t newAddr = addr + (currentChrBank * 0x2000);
         return chr[newAddr];
     }
+    return 0;
+}
+void CNROM::ppuWrite(uint16_t addr, uint8_t data)
+{
+    // No RAM
 }

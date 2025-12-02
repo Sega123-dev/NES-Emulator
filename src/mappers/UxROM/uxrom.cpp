@@ -20,6 +20,7 @@ uint8_t UXROM::ppuRead(uint16_t addr)
     {
         return chr[addr];
     }
+    return 0;
 }
 void UXROM::cpuWrite(uint16_t addr, uint8_t data)
 {
@@ -39,4 +40,8 @@ uint8_t UXROM::cpuRead(uint16_t addr)
         return prg[addr - 0xC000 + (prg.size() / 0x4000 - 1) * 0x4000];
     }
     return 0;
+}
+void UXROM::ppuWrite(uint16_t addr, uint8_t data)
+{
+    // No catching right now
 }

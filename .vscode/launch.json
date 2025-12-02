@@ -8,8 +8,8 @@
       "args": [],
       "stopAtEntry": false,
       "externalConsole": true,
-      "cwd": "c:/Users/User PS/OneDrive/Dokumenti/Coding/Github projects/NES-Emulator/src/bus",
-      "program": "c:/Users/User PS/OneDrive/Dokumenti/Coding/Github projects/NES-Emulator/src/bus/build/Debug/outDebug",
+      "cwd": "c:/Users/User PS/OneDrive/Dokumenti/Coding/Github projects/NES-Emulator/src/mappers/MMC3",
+      "program": "c:/Users/User PS/OneDrive/Dokumenti/Coding/Github projects/NES-Emulator/src/mappers/MMC3/build/Debug/outDebug",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [

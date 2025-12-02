@@ -1,14 +1,18 @@
 #include "cpu/6502ricoh.hpp"
 #include "bus/bus.hpp"
 #include "mappers/MMC3/mmc3.hpp"
+#include "mappers/iNES_reader/reader.hpp"
 #include <iostream>
 
 int main()
 {
     Bus nes;
-    CPU cpu;
     MMC3 mmc3;
+    dumpROM("castlevania.nes");
+
+    nes.mmc3 = &mmc3;
+    mmc3.connectBus(&nes);
     nes.cpu.connectBus(&nes);
-    nes.mmc3.connectBus(&nes);
-    cpu.reset();
+
+    nes.cpu.reset();
 }
