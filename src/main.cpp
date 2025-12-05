@@ -8,7 +8,7 @@ int main()
 {
     Bus nes;
     MMC3 mmc3;
-    dumpROM("castlevania.nes");
+    dumpROM("roms/castlevania.nes");
 
     nes.mmc3 = &mmc3;
     mmc3.connectBus(&nes);

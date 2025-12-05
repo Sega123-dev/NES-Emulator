@@ -109,4 +109,4 @@ void MMC1::ppuWrite(uint16_t addr, uint8_t data)
         chr[(chrBank1 * 0x1000 + (addr - 0x1000)) % chr.size()] = data;
 }
 
-// MMC1 simplified,may not enough features
+// MMC1 simplified,may not have enough features
