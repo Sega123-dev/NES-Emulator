@@ -1,6 +1,9 @@
+#pragma once
 #include <cstdint>
 #include <iostream>
 #include <vector>
+#include "../mappers/mapper.hpp"
+
 class PPU
 {
 public:
@@ -19,7 +22,7 @@ public:
     uint16_t v; // Current VRAM addr
     uint16_t t; // Temp VRAM addr
     uint8_t x;  // Fine X scroll
-    bool w;
+    bool w;     // Write toggle
 
     void clock();
 
@@ -33,4 +36,10 @@ public:
 
     int scanline;
     int cycle;
+
+    uint8_t ppuReadRaw(uint16_t addr);
+    void ppuWriteRaw(uint16_t addr, uint8_t data);
+
+    Mapper *mapper;
+    bool horizontalMirroring;
 };
