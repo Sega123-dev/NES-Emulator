@@ -12,6 +12,10 @@ public:
     uint8_t paletteRAM[32];
     uint8_t oam[256];
 
+    uint8_t secondaryOAM[8 * 4];
+
+    static constexpr const uint32_t PPU_CLOCK_SPEED = 5369317;
+
     uint8_t PPUCTRL;
     uint8_t PPUMASK;
     uint8_t PPUSTATUS;
@@ -42,6 +46,13 @@ public:
     bool spriteOverflow;
     uint8_t ppuOpenBus;
 
+    uint8_t spriteCount;
+    uint8_t spritePatternLow[8];
+    uint8_t spritePatternHigh[8];
+    uint8_t spriteAttributes[8];
+    uint8_t spriteX[8];
+    uint8_t spriteY[8];
+
     uint8_t ppuReadRaw(uint16_t addr);
     void ppuWriteRaw(uint16_t addr, uint8_t data);
 
@@ -68,4 +79,6 @@ public:
     bool emphasizeRed;
     bool emphasizeGreen;
     bool emphasizeBlue;
+
+    uint8_t framebuffer[240][256]; // Screen
 };

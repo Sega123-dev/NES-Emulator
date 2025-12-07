@@ -1,7 +1,7 @@
 #pragma once
 #include <cstdint>
 #include <iostream>
-
+#include "../ppu/ricoh2c02ntsc.hpp"
 enum AddressingMode
 {
     IMPLIED,
@@ -42,7 +42,7 @@ public:
     uint8_t dataBus, A, X, Y, P, sp, cycles, opState;
     uint16_t pc;
     bool NMI, IRQ, RESET;
-    const uint32_t CLOCK_SPEED = 1'790'000;
+    const uint32_t CPU_CLOCK_SPEED = PPU::PPU_CLOCK_SPEED / 3;
 
     void reset();
     void clock();

@@ -31,7 +31,6 @@ PPU::PPU(std::vector<uint8_t> &chrROMBuffer)
 
     horizontalMirroring = false; // Pull exact mirroring behavior from a mapper,this variable is a placeholder
 }
-
 uint8_t PPU ::ppuReadRaw(uint16_t addr)
 {
     addr = addr & 0x3FFF;
@@ -78,7 +77,6 @@ uint8_t PPU ::ppuReadRaw(uint16_t addr)
     }
     return 0;
 }
-
 void PPU::ppuWriteRaw(uint16_t addr, uint8_t data)
 {
     addr = addr & 0x3FFF;
@@ -163,4 +161,145 @@ uint8_t PPU::read2002()
     vblankFlag = false;
     w = false;
     return PPUSTATUS;
+}
+void PPU::clock()
+{
+    cycle++;
+    if (cycle > 340)
+    {
+        cycle = 0;
+        scanline++;
+        if (scanline > 261)
+            scanline = 0;
+    }
+    if (scanline == 241 && cycle == 1)
+        vblankFlag = true;
+    if (scanline == 261 && cycle == 1)
+    {
+        vblankFlag = false;
+        sprite0Hit = false;
+        spriteOverflow = false;
+    }
+    if (scanline >= 0 && scanline <= 239)
+    {
+        uint16_t tileAddress = 0x2000 | (v & 0x0FFF);
+        uint8_t tileID = ppuReadRaw(tileAddress);
+        uint8_t fineY = (v & 0x7000) >> 12;
+
+        uint8_t attrTableAddr = 0x23C0 + (v & 0x0C00) + ((v >> 4) & 0x38) + ((v >> 2) & 0x07);
+        uint8_t lowPtrTableByteAddr = bgPatternTable + (tileID * 16) + fineY;
+        uint8_t highPtrTableByteAddr = bgPatternTable + (tileID * 16) + fineY + 8;
+
+        uint8_t attrByte = ppuReadRaw(attrTableAddr);
+
+        uint8_t lowByte = ppuReadRaw(lowPtrTableByteAddr);
+        uint8_t highByte = ppuReadRaw(highPtrTableByteAddr);
+
+        uint8_t coarseX = (v & 0x1F);
+        uint8_t coarseY = (v >> 5) & 0x1F;
+
+        uint8_t quadX = (coarseX % 4) / 2;
+        uint8_t quadY = (coarseY % 4) / 2;
+
+        uint8_t paletteBits = (attrByte >> ((quadY * 2 + quadX) * 2)) & 0x03;
+        uint8_t fineX = x;
+        uint8_t pixel = fineX;
+
+        uint8_t colorIndex = ((highByte >> (7 - pixel)) & 1) << 1 |
+                             ((lowByte >> (7 - pixel)) & 1);
+
+        colorIndex |= (paletteBits << 2);
+
+        framebuffer[scanline][cycle - 1] = colorIndex;
+
+        if ((v & 0x001F) == 31)
+        {
+            v &= ~0x001F;
+            v ^= 0x0400;
+        }
+        else
+        {
+            v += 1;
+        }
+        if ((v & 0x7000) != 0x7000)
+        {
+            v += 0x1000;
+        }
+        else
+        {
+            v &= ~0x7000;
+            uint16_t coarseY = (v & 0x03E0) >> 5;
+            if (coarseY == 29)
+            {
+                coarseY = 0;
+                v ^= 0x0800;
+            }
+            else if (coarseY == 31)
+            {
+                coarseY = 0;
+            }
+            else
+            {
+                coarseY += 1;
+            }
+            v = (v & ~0x03E0) | (coarseY << 5);
+        }
+        spriteCount = 0;
+        for (int i = 0; i < 64; i++)
+        {
+            int y = oam[i * 4];
+
+            if (scanline >= y && scanline < y + spriteHeight)
+            {
+                if (spriteCount < 8)
+                {
+                    for (int j = 0; j < 4; j++)
+                        secondaryOAM[spriteCount * 4 + j] = oam[i * 4 + j];
+                    spriteCount++;
+                }
+                else
+                {
+                    spriteOverflow = true;
+                    break;
+                }
+            }
+        }
+        for (uint8_t i = 0; i < spriteCount; i++)
+        {
+            uint8_t tileID = secondaryOAM[i * 4 + 1];
+            uint8_t attributes = secondaryOAM[i * 4 + 2];
+            uint8_t spriteX = secondaryOAM[i * 4 + 3];
+            uint8_t spriteY = secondaryOAM[i * 4 + 0];
+
+            uint8_t fineY = scanline - spriteY;
+            uint16_t addr = spritePatternTable + tileID * 16 + fineY;
+
+            spritePatternLow[i] = ppuReadRaw(addr);
+            spritePatternHigh[i] = ppuReadRaw(addr + 8);
+            spriteAttributes[i] = attributes;
+
+            int xPos = spriteX;
+            if (cycle - 1 >= xPos && cycle - 1 < xPos + 8)
+            {
+                uint8_t fineX = cycle - 1 - xPos;
+                if (attributes & 0x40)
+                    fineX = 7 - fineX;
+
+                uint8_t spritePixel = ((spritePatternHigh[i] >> (7 - fineX)) & 1) << 1 |
+                                      ((spritePatternLow[i] >> (7 - fineX)) & 1);
+                if (spritePixel != 0)
+                {
+                    uint8_t palette = (attributes & 0x03) << 2;
+                    bool behindBackground = attributes & 0x20;
+                    if (!behindBackground || framebuffer[scanline][cycle - 1] == 0)
+                    {
+                        framebuffer[scanline][cycle - 1] = palette | spritePixel;
+                    }
+
+                    if (i == 0 && framebuffer[scanline][cycle - 1] != 0)
+                        sprite0Hit = true;
+                }
+            }
+        }
+    }
 }
