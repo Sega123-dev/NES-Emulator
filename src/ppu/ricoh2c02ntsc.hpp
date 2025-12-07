@@ -42,4 +42,25 @@ public:
 
     Mapper *mapper;
     bool horizontalMirroring;
+
+    // Write $2000
+
+    int vramIncrement;
+    uint16_t bgPatternTable;
+    uint16_t spritePatternTable;
+    int spriteHeight;
+
+    bool nmiOutput;
+
+    // Write $2001
+
+    bool showBackground;
+    bool showSprites;
+    bool showLeftBackground;
+    bool showLeftSprites;
+    bool grayscaleMode;
+
+    bool emphasizeRed;
+    bool emphasizeGreen;
+    bool emphasizeBlue;
 };

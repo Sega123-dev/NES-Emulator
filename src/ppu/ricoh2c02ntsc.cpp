@@ -29,7 +29,7 @@ PPU::PPU(std::vector<uint8_t> &chrROMBuffer)
     scanline = -1;
     cycle = 0;
 
-    horizontalMirroring = false;
+    horizontalMirroring = false; // Pull exact mirroring behavior from a mapper,this variable is a placeholder
 }
 
 uint8_t PPU ::ppuReadRaw(uint16_t addr)
@@ -123,4 +123,37 @@ void PPU::ppuWriteRaw(uint16_t addr, uint8_t data)
 
         paletteRAM[addr - 0x3F00] = data;
     }
+}
+
+void PPU::write2000(uint8_t data)
+{
+    PPUCTRL = data;
+
+    t = (t & 0x73FF) | ((data & 0x03) << 10);
+
+    vramIncrement = (data & 0x04) ? 32 : 1;
+
+    bgPatternTable = (data & 0x10) ? 0x1000 : 0x0000;
+
+    spritePatternTable = (data & 0x06) ? 0x1000 : 0x0000;
+
+    spriteHeight = (data & 0x20) ? 16 : 8;
+
+    nmiOutput = (data & 0x80) != 0;
+}
+
+void PPU::write2001(uint8_t data)
+{
+    PPUMASK = data;
+
+    grayscaleMode = data & 0x01;
+
+    showLeftBackground = data & 0x02;
+    showLeftSprites = data & 0x04;
+    showBackground = data & 0x08;
+    showSprites = data & 0x10;
+
+    emphasizeRed = data & 0x20;
+    emphasizeGreen = data & 0x40;
+    emphasizeBlue = data & 0x80;
 }
