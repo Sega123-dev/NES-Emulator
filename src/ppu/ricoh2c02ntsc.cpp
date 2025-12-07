@@ -123,6 +123,7 @@ void PPU::ppuWriteRaw(uint16_t addr, uint8_t data)
 
         paletteRAM[addr - 0x3F00] = data;
     }
+    ppuOpenBus = data;
 }
 
 void PPU::write2000(uint8_t data)
@@ -135,17 +136,17 @@ void PPU::write2000(uint8_t data)
 
     bgPatternTable = (data & 0x10) ? 0x1000 : 0x0000;
 
-    spritePatternTable = (data & 0x06) ? 0x1000 : 0x0000;
+    spritePatternTable = (data & 0x08) ? 0x1000 : 0x0000;
 
     spriteHeight = (data & 0x20) ? 16 : 8;
 
-    nmiOutput = (data & 0x80) != 0;
+    nmiOutput = (data & 0x80) != 0; // Update the NMI in the CPU when VBLANK is set
 }
 void PPU::write2001(uint8_t data)
 {
     PPUMASK = data;
 
-    grayscaleMode = data & 0x01;
+    grayscaleMode = data & 0x01; // Set it during the read/write
 
     showLeftBackground = data & 0x02;
     showLeftSprites = data & 0x04;
@@ -155,4 +156,11 @@ void PPU::write2001(uint8_t data)
     emphasizeRed = data & 0x20;
     emphasizeGreen = data & 0x40;
     emphasizeBlue = data & 0x80;
+}
+uint8_t PPU::read2002()
+{
+    PPUSTATUS = (vblankFlag << 7) | (sprite0Hit << 6) | (spriteOverflow << 5) | (ppuOpenBus & 0x1F);
+    vblankFlag = false;
+    w = false;
+    return PPUSTATUS;
 }

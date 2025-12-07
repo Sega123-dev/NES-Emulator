@@ -37,6 +37,11 @@ public:
     int scanline;
     int cycle;
 
+    bool vblankFlag;
+    bool sprite0Hit;
+    bool spriteOverflow;
+    uint8_t ppuOpenBus;
+
     uint8_t ppuReadRaw(uint16_t addr);
     void ppuWriteRaw(uint16_t addr, uint8_t data);
 
