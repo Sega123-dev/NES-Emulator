@@ -141,7 +141,6 @@ void PPU::write2000(uint8_t data)
 
     nmiOutput = (data & 0x80) != 0;
 }
-
 void PPU::write2001(uint8_t data)
 {
     PPUMASK = data;
