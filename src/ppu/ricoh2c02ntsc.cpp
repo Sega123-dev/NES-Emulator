@@ -31,6 +31,65 @@ PPU::PPU(std::vector<uint8_t> &chrROMBuffer)
 
     horizontalMirroring = false; // Pull exact mirroring behavior from a mapper,this variable is a placeholder
 }
+
+// HELPERS
+
+void PPU::loadBackgroundShifters()
+{
+    bgShiftLow = (bgShiftLow & 0xFF00) | nextTileLow;
+    bgShiftHigh = (bgShiftHigh & 0xFF00) | nextTileHigh;
+
+    uint8_t palette =
+        (nextTileAttr >>
+         (((v >> 4) & 4) | (v & 2))) &
+        0x03;
+
+    attrShiftLow = (attrShiftLow & 0xFF00) | ((palette & 1) ? 0xFF : 0x00);
+    attrShiftHigh = (attrShiftHigh & 0xFF00) | ((palette & 2) ? 0xFF : 0x00);
+}
+
+void PPU::incrementX()
+{
+    if ((v & 0x001F) == 31)
+    {
+        v &= ~0x001F;
+        v ^= 0x0400;
+    }
+    else
+        v++;
+}
+
+void PPU::incrementY()
+{
+    if ((v & 0x7000) != 0x7000)
+        v += 0x1000;
+    else
+    {
+        v &= ~0x7000;
+        uint16_t y = (v & 0x03E0) >> 5;
+        if (y == 29)
+        {
+            y = 0;
+            v ^= 0x0800;
+        }
+        else if (y == 31)
+            y = 0;
+        else
+            y++;
+        v = (v & ~0x03E0) | (y << 5);
+    }
+}
+
+void PPU::copyHorizontal()
+{
+    v = (v & ~0x041F) | (t & 0x041F);
+}
+
+void PPU::copyVertical()
+{
+    v = (v & ~0x7BE0) | (t & 0x7BE0);
+}
+
 uint8_t PPU ::ppuReadRaw(uint16_t addr)
 {
     addr = addr & 0x3FFF;
@@ -164,142 +223,100 @@ uint8_t PPU::read2002()
 }
 void PPU::clock()
 {
+
+    bool renderingEnabled = showBackground || showSprites;
+
+    if (scanline >= -1 && scanline < 240)
+    {
+        if (scanline == -1 && cycle == 1)
+        {
+            vblankFlag = false;
+            sprite0Hit = false;
+            spriteOverflow = false;
+        }
+        if (renderingEnabled &&
+            cycle >= 1 && cycle <= 256)
+        {
+            bgShiftLow <<= 1;
+            bgShiftHigh <<= 1;
+            attrShiftLow <<= 1;
+            attrShiftHigh <<= 1;
+        }
+        if (renderingEnabled &&
+            ((cycle >= 1 && cycle <= 256) || (cycle >= 321 && cycle <= 336)))
+        {
+            switch (cycle % 8)
+            {
+            case 1:
+                nextTileID = ppuReadRaw(0x2000 | (v & 0x0FFF));
+                break;
+
+            case 3:
+                nextTileAttr = ppuReadRaw(
+                    0x23C0 |
+                    (v & 0x0C00) |
+                    ((v >> 4) & 0x38) |
+                    ((v >> 2) & 0x07));
+                break;
+
+            case 5:
+                nextTileLow = ppuReadRaw(
+                    bgPatternTable +
+                    nextTileID * 16 +
+                    ((v >> 12) & 7));
+                break;
+
+            case 7:
+                nextTileHigh = ppuReadRaw(
+                    bgPatternTable +
+                    nextTileID * 16 +
+                    ((v >> 12) & 7) + 8);
+                break;
+
+            case 0:
+                loadBackgroundShifters();
+                incrementX();
+                break;
+            }
+        }
+        if (renderingEnabled)
+        {
+            if (cycle == 256)
+                incrementY();
+
+            if (cycle == 257)
+                copyHorizontal();
+
+            if (scanline == -1 && cycle >= 280 && cycle <= 304)
+                copyVertical();
+        }
+    }
+    if (scanline >= 0 && scanline < 240 &&
+        cycle >= 1 && cycle <= 256)
+    {
+        uint8_t bit = 15 - x;
+
+        uint8_t bgPixel =
+            ((bgShiftHigh >> bit) & 1) << 1 |
+            ((bgShiftLow >> bit) & 1);
+
+        uint8_t bgPalette =
+            ((attrShiftHigh >> bit) & 1) << 1 |
+            ((attrShiftLow >> bit) & 1);
+
+        uint8_t colorIndex =
+            bgPixel ? ((bgPalette << 2) | bgPixel) : 0;
+
+        framebuffer[scanline][cycle - 1] = colorIndex;
+    }
+    if (scanline == 241 && cycle == 1)
+        vblankFlag = true;
     cycle++;
     if (cycle > 340)
     {
         cycle = 0;
         scanline++;
         if (scanline > 261)
-            scanline = 0;
-    }
-    if (scanline == 241 && cycle == 1)
-        vblankFlag = true;
-    if (scanline == 261 && cycle == 1)
-    {
-        vblankFlag = false;
-        sprite0Hit = false;
-        spriteOverflow = false;
-    }
-    if (scanline >= 0 && scanline <= 239)
-    {
-        uint16_t tileAddress = 0x2000 | (v & 0x0FFF);
-        uint8_t tileID = ppuReadRaw(tileAddress);
-        uint8_t fineY = (v & 0x7000) >> 12;
-
-        uint8_t attrTableAddr = 0x23C0 + (v & 0x0C00) + ((v >> 4) & 0x38) + ((v >> 2) & 0x07);
-        uint8_t lowPtrTableByteAddr = bgPatternTable + (tileID * 16) + fineY;
-        uint8_t highPtrTableByteAddr = bgPatternTable + (tileID * 16) + fineY + 8;
-
-        uint8_t attrByte = ppuReadRaw(attrTableAddr);
-
-        uint8_t lowByte = ppuReadRaw(lowPtrTableByteAddr);
-        uint8_t highByte = ppuReadRaw(highPtrTableByteAddr);
-
-        uint8_t coarseX = (v & 0x1F);
-        uint8_t coarseY = (v >> 5) & 0x1F;
-
-        uint8_t quadX = (coarseX % 4) / 2;
-        uint8_t quadY = (coarseY % 4) / 2;
-
-        uint8_t paletteBits = (attrByte >> ((quadY * 2 + quadX) * 2)) & 0x03;
-        uint8_t fineX = x;
-        uint8_t pixel = fineX;
-
-        uint8_t colorIndex = ((highByte >> (7 - pixel)) & 1) << 1 |
-                             ((lowByte >> (7 - pixel)) & 1);
-
-        colorIndex |= (paletteBits << 2);
-
-        framebuffer[scanline][cycle - 1] = colorIndex;
-
-        if ((v & 0x001F) == 31)
-        {
-            v &= ~0x001F;
-            v ^= 0x0400;
-        }
-        else
-        {
-            v += 1;
-        }
-        if ((v & 0x7000) != 0x7000)
-        {
-            v += 0x1000;
-        }
-        else
-        {
-            v &= ~0x7000;
-            uint16_t coarseY = (v & 0x03E0) >> 5;
-            if (coarseY == 29)
-            {
-                coarseY = 0;
-                v ^= 0x0800;
-            }
-            else if (coarseY == 31)
-            {
-                coarseY = 0;
-            }
-            else
-            {
-                coarseY += 1;
-            }
-            v = (v & ~0x03E0) | (coarseY << 5);
-        }
-        spriteCount = 0;
-        for (int i = 0; i < 64; i++)
-        {
-            int y = oam[i * 4];
-
-            if (scanline >= y && scanline < y + spriteHeight)
-            {
-                if (spriteCount < 8)
-                {
-                    for (int j = 0; j < 4; j++)
-                        secondaryOAM[spriteCount * 4 + j] = oam[i * 4 + j];
-                    spriteCount++;
-                }
-                else
-                {
-                    spriteOverflow = true;
-                    break;
-                }
-            }
-        }
-        for (uint8_t i = 0; i < spriteCount; i++)
-        {
-            uint8_t tileID = secondaryOAM[i * 4 + 1];
-            uint8_t attributes = secondaryOAM[i * 4 + 2];
-            uint8_t spriteX = secondaryOAM[i * 4 + 3];
-            uint8_t spriteY = secondaryOAM[i * 4 + 0];
-
-            uint8_t fineY = scanline - spriteY;
-            uint16_t addr = spritePatternTable + tileID * 16 + fineY;
-
-            spritePatternLow[i] = ppuReadRaw(addr);
-            spritePatternHigh[i] = ppuReadRaw(addr + 8);
-            spriteAttributes[i] = attributes;
-
-            int xPos = spriteX;
-            if (cycle - 1 >= xPos && cycle - 1 < xPos + 8)
-            {
-                uint8_t fineX = cycle - 1 - xPos;
-                if (attributes & 0x40)
-                    fineX = 7 - fineX;
-
-                uint8_t spritePixel = ((spritePatternHigh[i] >> (7 - fineX)) & 1) << 1 |
-                                      ((spritePatternLow[i] >> (7 - fineX)) & 1);
-                if (spritePixel != 0)
-                {
-                    uint8_t palette = (attributes & 0x03) << 2;
-                    bool behindBackground = attributes & 0x20;
-                    if (!behindBackground || framebuffer[scanline][cycle - 1] == 0)
-                    {
-                        framebuffer[scanline][cycle - 1] = palette | spritePixel;
-                    }
-
-                    if (i == 0 && framebuffer[scanline][cycle - 1] != 0)
-                        sprite0Hit = true;
-                }
-            }
-        }
+            scanline = -1;
     }
 }

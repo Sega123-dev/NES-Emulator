@@ -81,4 +81,23 @@ public:
     bool emphasizeBlue;
 
     uint8_t framebuffer[240][256]; // Screen
+
+    uint16_t bgShiftLow = 0;
+    uint16_t bgShiftHigh = 0;
+    uint16_t attrShiftLow = 0;
+    uint16_t attrShiftHigh = 0;
+
+    uint8_t nextTileID = 0;
+    uint8_t nextTileAttr = 0;
+    uint8_t nextTileLow = 0;
+    uint8_t nextTileHigh = 0;
+
+    // Background shift register helpers
+    void loadBackgroundShifters();
+
+    // Scrolling helpers
+    void incrementX();
+    void incrementY();
+    void copyHorizontal();
+    void copyVertical();
 };
