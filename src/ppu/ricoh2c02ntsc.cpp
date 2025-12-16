@@ -223,6 +223,7 @@ uint8_t PPU::read2002()
 }
 void PPU::clock()
 {
+    spriteHeight = (PPUCTRL & 0x20) ? 16 : 8; // Needs to be set before any first visible scanlines
 
     bool renderingEnabled = showBackground || showSprites;
 
@@ -318,5 +319,31 @@ void PPU::clock()
         scanline++;
         if (scanline > 261)
             scanline = -1;
+    }
+    if (scanline >= 257 && scanline <= 320)
+    {
+
+        for (int i = 0; i < 32; i++)
+        {
+            secondaryOAM[i] = 0;
+        }
+        spriteCount = 0;
+        for (int i = 0; i < 64; i++)
+        {
+            uint8_t Ypos = oam[i * 4 + 0];
+            if (scanline >= Ypos && scanline < Ypos + spriteHeight)
+            {
+                if (spriteCount >= 8)
+                {
+                    spriteOverflow = true;
+                    break;
+                }
+                for (int j = 0; j < 4; j++)
+                {
+                    secondaryOAM[spriteCount * 4 + j] = oam[i * 4 + j];
+                }
+                spriteCount++;
+            }
+        }
     }
 }

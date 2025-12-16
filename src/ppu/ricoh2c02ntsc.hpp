@@ -50,8 +50,6 @@ public:
     uint8_t spritePatternLow[8];
     uint8_t spritePatternHigh[8];
     uint8_t spriteAttributes[8];
-    uint8_t spriteX[8];
-    uint8_t spriteY[8];
 
     uint8_t ppuReadRaw(uint16_t addr);
     void ppuWriteRaw(uint16_t addr, uint8_t data);
