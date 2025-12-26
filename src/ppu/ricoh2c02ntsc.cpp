@@ -331,8 +331,11 @@ void PPU::clock()
         for (int i = 0; i < 64; i++)
         {
             uint8_t Ypos = oam[i * 4 + 0];
+
             if (scanline >= Ypos && scanline < Ypos + spriteHeight)
             {
+                spriteAttributes[i] = secondaryOAM[i * 4 + 2];
+                spriteX[i] = secondaryOAM[i * 4 + 3];
                 if (spriteCount >= 8)
                 {
                     spriteOverflow = true;
@@ -344,6 +347,53 @@ void PPU::clock()
                 }
                 spriteCount++;
             }
+        }
+        for (int i = 0; i < spriteCount; i++)
+        {
+            uint8_t spriteY = secondaryOAM[i * 4 + 0];
+            uint8_t Xsprite = secondaryOAM[i * 4 + 3];
+            uint8_t spriteRow = scanline - spriteY;
+            uint16_t patternTableBase;
+            uint8_t tileIndex = secondaryOAM[i * 4 + 1];
+            uint16_t patternTableAddr;
+
+            if (secondaryOAM[i * 4 + 2] & 0x80)
+                spriteRow = (spriteHeight - 1) - spriteRow;
+
+            spriteRowBuffer[i] = spriteRow;
+
+            if (spriteHeight == 8)
+            {
+                patternTableBase = (PPUCTRL & 0x08) ? 0x1000 : 0x0000;
+
+                patternTableAddr = patternTableBase + tileIndex * 16 + spriteRow;
+            }
+            else
+            {
+                patternTableBase = (tileIndex & 1) ? 0x1000 : 0x0000;
+
+                if (spriteRow < 8)
+                {
+                    patternTableAddr = patternTableBase + (tileIndex & 0xFE) * 16 + spriteRow;
+                }
+                else
+                {
+                    patternTableAddr = patternTableBase + (tileIndex | 0x01) * 16 + (spriteRow - 8);
+                }
+            }
+
+            spritePatternLow[i] = ppuReadRaw(patternTableAddr);
+            spritePatternHigh[i] = ppuReadRaw(patternTableAddr + 8);
+
+            int fineX = cycle - Xsprite;
+            if (fineX < 0 || fineX > 7)
+                continue;
+
+            if (secondaryOAM[i * 4 + 2] & 0x40)
+                fineX = 7 - fineX;
+
+            uint8_t spritePixel = ((spritePatternHigh[i] >> (7 - fineX)) & 1) << 1 |
+                                  ((spritePatternLow[i] >> (7 - fineX)) & 1);
         }
     }
 }
