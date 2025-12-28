@@ -235,6 +235,24 @@ void PPU::write2006(uint8_t data)
         w = 0;
     }
 }
+void PPU::write2005(uint8_t data)
+{
+    if (w == 0)
+    {
+        x = data & 0x07;
+        t = (t & 0xFFE0) | ((data >> 3) & 0x1F);
+        w = 1;
+    }
+    else
+    {
+        t = (t & 0x8FFF) |
+            ((data & 0x07) << 12);
+
+        t = (t & 0xFC1F) |
+            ((data >> 3) & 0x1F) << 5;
+        w = 0;
+    }
+}
 void PPU::clock()
 {
     spriteHeight = (PPUCTRL & 0x20) ? 16 : 8; // Needs to be set before any first visible scanlines
