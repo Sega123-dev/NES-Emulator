@@ -253,6 +253,56 @@ void PPU::write2005(uint8_t data)
         w = 0;
     }
 }
+void PPU::write2007(uint8_t data)
+{
+    uint16_t addr = v & 0x3FFF;
+    if (addr < 0x2000)
+    {
+        mapper->ppuWrite(addr, data);
+    }
+    else if (addr < 0x3F00)
+    {
+        mapper->ppuWrite(addr, data);
+    }
+    else
+    {
+        uint8_t palAddr = (addr - 0x3F00) & 0x1F;
+        if (palAddr == 0x10)
+            palAddr = 0x00;
+        if (palAddr == 0x14)
+            palAddr = 0x04;
+        if (palAddr == 0x18)
+            palAddr = 0x08;
+        if (palAddr == 0x1C)
+            palAddr = 0x0C;
+        paletteRAM[palAddr] = data;
+    }
+    v += (PPUCTRL & 0x04) ? 32 : 1;
+}
+uint8_t PPU::read2007()
+{
+    uint16_t addr = v & 0x3FFF;
+    uint16_t ppuDataBuffer = mapper->ppuRead(addr);
+    if (addr < 0x3F00)
+        return ppuDataBuffer;
+
+    else if (addr >= 0x3F00)
+    {
+        uint8_t palAddr = (addr - 0x3F00) & 0x1F;
+        if (palAddr == 0x10)
+            palAddr = 0x00;
+        if (palAddr == 0x14)
+            palAddr = 0x04;
+        if (palAddr == 0x18)
+            palAddr = 0x08;
+        if (palAddr == 0x1C)
+            palAddr = 0x0C;
+        return paletteRAM[palAddr];
+
+        ppuDataBuffer = mapper->ppuRead(addr - 0x1000);
+    }
+    v += (PPUCTRL & 0x04) ? 32 : 1;
+}
 void PPU::clock()
 {
     spriteHeight = (PPUCTRL & 0x20) ? 16 : 8; // Needs to be set before any first visible scanlines
