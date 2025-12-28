@@ -46,6 +46,8 @@ public:
     bool spriteOverflow;
     uint8_t ppuOpenBus;
 
+    // Sprite fetch
+
     uint8_t spriteCount;
     uint8_t spritePatternLow[8];
     uint8_t spritePatternHigh[8];

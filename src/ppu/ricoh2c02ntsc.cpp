@@ -221,6 +221,20 @@ uint8_t PPU::read2002()
     w = false;
     return PPUSTATUS;
 }
+void PPU::write2006(uint8_t data)
+{
+    if (w == 0)
+    {
+        t = (t & 0x00FF) | ((data & 0x3F) << 8);
+        w = 1;
+    }
+    else
+    {
+        t = (t & 0xFF00) | data;
+        v = t;
+        w = 0;
+    }
+}
 void PPU::clock()
 {
     spriteHeight = (PPUCTRL & 0x20) ? 16 : 8; // Needs to be set before any first visible scanlines
@@ -365,7 +379,6 @@ void PPU::clock()
             if (spriteHeight == 8)
             {
                 patternTableBase = (PPUCTRL & 0x08) ? 0x1000 : 0x0000;
-
                 patternTableAddr = patternTableBase + tileIndex * 16 + spriteRow;
             }
             else
@@ -373,13 +386,9 @@ void PPU::clock()
                 patternTableBase = (tileIndex & 1) ? 0x1000 : 0x0000;
 
                 if (spriteRow < 8)
-                {
                     patternTableAddr = patternTableBase + (tileIndex & 0xFE) * 16 + spriteRow;
-                }
                 else
-                {
                     patternTableAddr = patternTableBase + (tileIndex | 0x01) * 16 + (spriteRow - 8);
-                }
             }
 
             spritePatternLow[i] = ppuReadRaw(patternTableAddr);
