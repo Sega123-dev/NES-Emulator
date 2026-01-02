@@ -20,4 +20,6 @@ private:
     std::vector<uint8_t> chr;
 
     uint8_t currentPRGbank = 0;
+    uint8_t lastCpuValue = 0;
+    uint8_t lastPpuValue = 0;
 };

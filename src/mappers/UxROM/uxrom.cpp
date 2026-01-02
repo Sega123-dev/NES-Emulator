@@ -16,30 +16,43 @@ UXROM::UXROM(std::vector<uint8_t> &prgData, std::vector<uint8_t> &chrData)
 }
 uint8_t UXROM::ppuRead(uint16_t addr)
 {
+    uint8_t value;
     if (addr < 0x2000)
-    {
-        return chr[addr];
-    }
-    return 0;
+        value = chr[addr];
+    else
+        value = lastPpuValue;
+
+    lastPpuValue = value;
+    return value;
 }
 void UXROM::cpuWrite(uint16_t addr, uint8_t data)
 {
     if (addr >= 0x8000)
     {
-        currentPRGbank = data % (prg.size() / 0x4000 - 1);
+        size_t bankCount = prg.size() / 0x4000;
+        if (bankCount > 1)
+            currentPRGbank = data % (bankCount - 1);
+        else
+            currentPRGbank = 0;
+        currentPRGbank = data % (bankCount - 1);
     }
 }
 uint8_t UXROM::cpuRead(uint16_t addr)
 {
+    uint8_t value;
     if (addr >= 0x8000 && addr <= 0xBFFF)
     {
-        return prg[addr - 0x8000 + currentPRGbank * 0x4000];
+        value = prg[(addr - 0x8000 + currentPRGbank * 0x4000) % prg.size()];
     }
     else if (addr >= 0xC000 && addr <= 0xFFFF)
     {
-        return prg[addr - 0xC000 + (prg.size() / 0x4000 - 1) * 0x4000];
+        value = prg[addr - 0xC000 + (prg.size() / 0x4000 - 1) * 0x4000];
     }
-    return 0;
+    else
+        value = lastCpuValue;
+
+    lastCpuValue = value;
+    return value;
 }
 void UXROM::ppuWrite(uint16_t addr, uint8_t data)
 {
