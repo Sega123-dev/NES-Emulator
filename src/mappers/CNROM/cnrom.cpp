@@ -5,7 +5,6 @@
 
 void CNROM::reset()
 {
-    chrBankCount = 1;
     currentChrBank = 0;
 }
 CNROM::CNROM(std::vector<uint8_t> &prgData, std::vector<uint8_t> &chrData)
@@ -18,28 +17,44 @@ CNROM::CNROM(std::vector<uint8_t> &prgData, std::vector<uint8_t> &chrData)
 }
 uint8_t CNROM::cpuRead(uint16_t addr)
 {
-    if (prg.size() == 0x4000)
+    uint8_t value;
+    if (addr >= 0x8000 && addr <= 0xFFFF)
     {
-        return prg[addr & 0x3FFF];
+        if (prg.size() == 0x4000)
+        {
+            value = prg[addr & 0x3FFF];
+        }
+        else
+        {
+            value = prg[addr & 0x7FFF];
+        }
     }
     else
     {
-        return prg[addr & 0x7FFF];
+        return lastCpuValue;
     }
+    lastCpuValue = value;
+    return value;
 }
 void CNROM::cpuWrite(uint16_t addr, uint8_t data)
 {
     if (addr >= 0x8000)
-        currentChrBank = data % chrBankCount;
+        currentChrBank = (data & 0x03) % chrBankCount;
 }
 uint8_t CNROM::ppuRead(uint16_t addr)
 {
+    uint8_t value;
     if (addr < 0x2000)
     {
         uint16_t newAddr = addr + (currentChrBank * 0x2000);
-        return chr[newAddr];
+        value = chr[newAddr];
     }
-    return 0;
+    else
+    {
+        value = lastPpuValue;
+    }
+    lastPpuValue = value;
+    return value;
 }
 void CNROM::ppuWrite(uint16_t addr, uint8_t data)
 {

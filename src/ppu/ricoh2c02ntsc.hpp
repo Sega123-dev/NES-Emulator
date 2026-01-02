@@ -82,6 +82,9 @@ public:
     bool emphasizeGreen;
     bool emphasizeBlue;
 
+    // Read $2007
+    uint16_t ppuDataBuffer;
+
     uint8_t framebuffer[240][256]; // Screen
 
     uint16_t bgShiftLow = 0;

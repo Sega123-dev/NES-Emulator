@@ -282,9 +282,12 @@ void PPU::write2007(uint8_t data)
 uint8_t PPU::read2007()
 {
     uint16_t addr = v & 0x3FFF;
-    uint16_t ppuDataBuffer = mapper->ppuRead(addr);
+    uint8_t returned; // For keeping the old value
     if (addr < 0x3F00)
-        return ppuDataBuffer;
+    {
+        returned = ppuDataBuffer;
+        ppuDataBuffer = mapper->ppuRead(addr);
+    }
 
     else if (addr >= 0x3F00)
     {
@@ -297,11 +300,13 @@ uint8_t PPU::read2007()
             palAddr = 0x08;
         if (palAddr == 0x1C)
             palAddr = 0x0C;
-        return paletteRAM[palAddr];
+
+        returned = paletteRAM[palAddr];
 
         ppuDataBuffer = mapper->ppuRead(addr - 0x1000);
     }
     v += (PPUCTRL & 0x04) ? 32 : 1;
+    return returned;
 }
 void PPU::clock()
 {

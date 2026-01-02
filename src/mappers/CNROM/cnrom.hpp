@@ -20,4 +20,7 @@ private:
 
     uint8_t currentChrBank = 0;
     uint8_t chrBankCount = 1;
+
+    uint8_t lastCpuValue = 0;
+    uint8_t lastPpuValue = 0;
 };
