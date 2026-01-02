@@ -14,6 +14,8 @@ class NROM : public Mapper
 
 private:
     Mirroring mirroring = HORIZONTAL;
+    uint8_t lastCpuValue = 0;
+    uint8_t lastPpuValue = 0;
 
 public:
     std::vector<uint8_t> prg;
