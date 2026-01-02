@@ -6,7 +6,9 @@
 enum Mirroring
 {
     VERTICAL,
-    HORIZONTAL
+    HORIZONTAL,
+    ONE_SCREEN_LOW,
+    ONE_SCREEN_HIGH
 };
 class MMC1 : public Mapper
 {
@@ -29,5 +31,8 @@ private:
     uint8_t chrBank0 = 0, chrBank1 = 0;
     uint8_t prgBank = 0;
 
-    Mirroring mirroring = Mirroring::HORIZONTAL;
+    Mirroring mirroring = HORIZONTAL;
+
+    uint8_t lastCpuValue;
+    uint8_t lastPpuValue;
 };

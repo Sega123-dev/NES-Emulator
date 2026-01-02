@@ -4,7 +4,7 @@
 #include <vector>
 void MMC1::reset()
 {
-    shiftReg = 0;
+    shiftReg = 0x10;
     shiftCount = 0;
 
     controlReg = 0x0C;
@@ -22,10 +22,11 @@ MMC1::MMC1(const std::vector<uint8_t> &prgData, const std::vector<uint8_t> &chrD
 };
 void MMC1::cpuWrite(uint16_t addr, uint8_t value)
 {
+
     if (value & 0x80)
     {
         controlReg |= 0x0C;
-        shiftReg = 0;
+        shiftReg = 0x10;
         shiftCount = 0;
         return;
     }
@@ -37,13 +38,13 @@ void MMC1::cpuWrite(uint16_t addr, uint8_t value)
     if (shiftCount == 5)
     {
         if (addr >= 0x8000 && addr <= 0x9FFF)
-            controlReg = shiftReg;
+            controlReg = shiftReg & 0x1F;
         else if (addr >= 0xA000 && addr <= 0xBFFF)
-            chrBank0 = shiftReg;
+            chrBank0 = shiftReg & 0x1F;
         else if (addr >= 0xC000 && addr <= 0xDFFF)
-            chrBank1 = shiftReg;
+            chrBank1 = shiftReg & 0x1F;
         else if (addr >= 0xE000 && addr <= 0xFFFF)
-            prgBank = shiftReg;
+            prgBank = shiftReg & 0x1F;
 
         shiftReg = 0;
         shiftCount = 0;
@@ -51,10 +52,10 @@ void MMC1::cpuWrite(uint16_t addr, uint8_t value)
         switch (controlReg & 0x03)
         {
         case 0:
-            mirroring = VERTICAL;
+            mirroring = ONE_SCREEN_LOW;
             break;
         case 1:
-            mirroring = VERTICAL;
+            mirroring = ONE_SCREEN_HIGH;
             break;
         case 2:
             mirroring = VERTICAL;
@@ -67,8 +68,9 @@ void MMC1::cpuWrite(uint16_t addr, uint8_t value)
 }
 uint8_t MMC1::cpuRead(uint16_t addr)
 {
+    uint8_t value;
     if (addr < 0x8000)
-        return 0;
+        return lastCpuValue;
     size_t index = 0;
     uint8_t prgMode = (controlReg >> 2) & 0x03;
 
@@ -76,37 +78,66 @@ uint8_t MMC1::cpuRead(uint16_t addr)
     {
     case 0:
     case 1:
-        index = (prgBank & 0xFE) * 0x4000 + (addr - 0x8000);
+        index = ((prgBank & 0xFE) * 0x4000 + (addr - 0x8000)) % prg.size();
+        value = prg[index];
         break;
     case 2:
         if (addr < 0xC000)
-            index = addr - 0x8000;
+            index = (addr - 0x8000) % prg.size();
         else
-            index = prgBank * 0x4000 + (addr - 0xC000);
+            index = (prgBank * 0x4000 + (addr - 0xC000)) % prg.size();
+        value = prg[index];
         break;
     case 3:
         if (addr < 0xC000)
-            index = prgBank * 0x4000 + (addr - 0x8000);
+            index = (prgBank * 0x4000 + (addr - 0x8000)) % prg.size();
         else
-            index = prg.size() - 0x4000 + (addr - 0xC000);
+            index = (prg.size() - 0x4000 + (addr - 0xC000)) % prg.size();
+        value = prg[index];
         break;
     }
-    return prg[index % prg.size()];
+    lastCpuValue = value;
+    return value;
 }
 uint8_t MMC1::ppuRead(uint16_t addr)
 {
-    if (addr < 0x1000)
-        return chr[(chrBank0 * 0x1000 + addr) % chr.size()];
-    else if (addr < 0x2000)
-        return chr[(chrBank1 * 0x1000 + (addr - 0x1000)) % chr.size()];
-    return 0;
+    addr &= 0x1FFF;
+    uint8_t chrMode = (controlReg >> 4) & 1;
+    uint8_t bank = chrBank0 & 0x1E;
+    uint16_t finalAddr = 0;
+    if (chrMode == 0)
+    {
+        bank = chrBank0 & 0x1E;
+        finalAddr = bank * 0x1000 + addr;
+    }
+    if (chrMode == 1)
+    {
+        if (addr < 0x1000)
+            finalAddr = chrBank0 * 0x1000 + addr;
+        else if (addr < 0x2000)
+            finalAddr = chrBank1 * 0x1000 + (addr - 0x1000);
+    }
+
+    return chr[finalAddr % chr.size()];
 }
 void MMC1::ppuWrite(uint16_t addr, uint8_t data)
 {
-    if (addr < 0x1000)
-        chr[(chrBank0 * 0x1000 + addr) % chr.size()] = data;
-    else if (addr < 0x2000)
-        chr[(chrBank1 * 0x1000 + (addr - 0x1000)) % chr.size()] = data;
-}
+    addr &= 0x1FFF;
+    uint8_t chrMode = (controlReg >> 4) & 1;
+    uint8_t bank = chrBank0 & 0x1E;
+    uint16_t finalAddr;
+    if (chrMode == 0)
+    {
+        bank = chrBank0 & 0x1E;
+        finalAddr = bank * 0x1000 + addr;
+    }
+    if (chrMode == 1)
+    {
+        if (addr < 0x1000)
+            finalAddr = chrBank0 * 0x1000 + addr;
+        else if (addr < 0x2000)
+            finalAddr = chrBank1 * 0x1000 + (addr - 0x1000);
+    }
 
-// MMC1 simplified,may not have enough features
+    chr[finalAddr % chr.size()] = data;
+}

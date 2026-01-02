@@ -62,16 +62,25 @@ void dumpROM(const char *filename)
         if (trainer)
             rom.seekg(512, std::ios::cur);
 
-                if (rom.read(prgBuffer.data(), prgRomSize))
+        if (rom.read(prgBuffer.data(), prgRomSize))
         {
             PRG_ROM.assign(prgBuffer.begin(), prgBuffer.end());
         }
         std::cout << "PRG_ROM parsed\n";
-        if (rom.read(chrBuffer.data(), chrRomSize))
+        if (chrRomSize == 0)
         {
-            CHR_ROM.assign(chrBuffer.begin(), chrBuffer.end());
+            CHR_ROM.resize(0x2000, 0); // 8 KB RAM
+            std::cout << "Detected CHR RAM, allocating 8 KB\n";
         }
-        std::cout << "CHR_ROM parsed\n";
+        else
+        {
+            chrBuffer.resize(chrRomSize);
+            if (rom.read(chrBuffer.data(), chrRomSize))
+            {
+                CHR_ROM.assign(chrBuffer.begin(), chrBuffer.end());
+                std::cout << "CHR_ROM parsed\n";
+            }
+        }
         rom.close();
         Mapper *mapper = chooseMapper();
         if (!mapper)
