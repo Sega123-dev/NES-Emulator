@@ -240,6 +240,10 @@ void CPU::compare(uint8_t reg, uint8_t value)
     else
         P &= ~(0x01 << 7);
 }
+void CPU::setIRQ()
+{
+    IRQ = true;
+}
 void CPU::clearIRQ()
 {
     IRQ = false;

@@ -105,4 +105,9 @@ public:
     void incrementY();
     void copyHorizontal();
     void copyVertical();
+
+    // Used to store an address for A12 in MMC3
+
+    uint16_t getLastAddress();
+    uint16_t lastPPUAddress;
 };

@@ -90,18 +90,23 @@ void PPU::copyVertical()
     v = (v & ~0x7BE0) | (t & 0x7BE0);
 }
 
+uint16_t PPU::getLastAddress()
+{
+    return lastPPUAddress;
+}
+
 uint8_t PPU ::ppuReadRaw(uint16_t addr)
 {
     addr = addr & 0x3FFF;
 
     if (addr >= 0x3000 && addr <= 0x3EFF)
         addr -= 0x1000;
-
+    lastPPUAddress = addr;
     unsigned int VRAMindex;
 
     if (addr >= 0x0000 && addr <= 0x1FFF)
         return mapper->ppuRead(addr);
-
+    lastPPUAddress = addr;
     if (addr >= 0x2000 && addr <= 0x2FFF)
     {
         uint8_t NTindex = (addr - 0x2000) / 0x400;
@@ -115,7 +120,7 @@ uint8_t PPU ::ppuReadRaw(uint16_t addr)
         {
             VRAMindex = (NTindex % 2) * 0x400 + offset;
         }
-
+        lastPPUAddress = addr;
         return vram[VRAMindex];
     }
 
@@ -132,6 +137,8 @@ uint8_t PPU ::ppuReadRaw(uint16_t addr)
         if (addr == 0x3F1C)
             addr = 0x3F0C;
 
+        lastPPUAddress = addr;
+
         return paletteRAM[addr - 0x3F00];
     }
     return 0;
@@ -142,12 +149,12 @@ void PPU::ppuWriteRaw(uint16_t addr, uint8_t data)
 
     if (addr >= 0x3000 && addr <= 0x3EFF)
         addr -= 0x1000;
-
+    lastPPUAddress = addr;
     unsigned int VRAMindex;
 
     if (addr >= 0x0000 && addr <= 0x1FFF)
         mapper->ppuWrite(addr, data);
-
+    lastPPUAddress = addr;
     if (addr >= 0x2000 && addr <= 0x2FFF)
     {
         uint8_t NTindex = (addr - 0x2000) / 0x400;
@@ -163,6 +170,7 @@ void PPU::ppuWriteRaw(uint16_t addr, uint8_t data)
         }
 
         vram[VRAMindex] = data;
+        lastPPUAddress = addr;
     }
 
     if (addr >= 0x3F00 && addr <= 0x3FFF)
@@ -179,6 +187,7 @@ void PPU::ppuWriteRaw(uint16_t addr, uint8_t data)
             addr = 0x3F0C;
 
         paletteRAM[addr - 0x3F00] = data;
+        lastPPUAddress = addr;
     }
     ppuOpenBus = data;
 }
@@ -259,10 +268,12 @@ void PPU::write2007(uint8_t data)
     if (addr < 0x2000)
     {
         mapper->ppuWrite(addr, data);
+        lastPPUAddress = addr;
     }
     else if (addr < 0x3F00)
     {
         mapper->ppuWrite(addr, data);
+        lastPPUAddress = addr;
     }
     else
     {
@@ -276,8 +287,10 @@ void PPU::write2007(uint8_t data)
         if (palAddr == 0x1C)
             palAddr = 0x0C;
         paletteRAM[palAddr] = data;
+        lastPPUAddress = addr;
     }
     v += (PPUCTRL & 0x04) ? 32 : 1;
+    lastPPUAddress = addr;
 }
 uint8_t PPU::read2007()
 {
@@ -306,6 +319,7 @@ uint8_t PPU::read2007()
         ppuDataBuffer = mapper->ppuRead(addr - 0x1000);
     }
     v += (PPUCTRL & 0x04) ? 32 : 1;
+    lastPPUAddress = addr;
     return returned;
 }
 void PPU::clock()
