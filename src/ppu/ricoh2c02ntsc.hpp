@@ -55,8 +55,24 @@ public:
     uint8_t spriteRowBuffer[8];
     uint8_t spriteX[8];
 
+    // Sprite render
+
+    uint8_t spritePalette[8];
+    uint8_t spritePriority[8];
+    uint8_t spriteXCounter[8];
+    uint8_t spriteShiftLow[8];
+    uint8_t spriteShiftHigh[8];
+
+    bool spriteZeroPossible;
+    bool spriteZeroRendering;
+    bool showSpritesLeft;
+
+    // Raw reads/writes
+
     uint8_t ppuReadRaw(uint16_t addr);
     void ppuWriteRaw(uint16_t addr, uint8_t data);
+
+    // Mapper instance
 
     Mapper *mapper;
     bool horizontalMirroring;

@@ -1,9 +1,13 @@
 #include <cstdint>
 #include <iostream>
 #include <vector>
+#include <SDL.h>
 #include "ricoh2c02ntsc.hpp"
 #include "../mappers/iNES_reader/reader.hpp"
 #include "../mappers/mapper.hpp"
+#undef main // Important for MinGW/SDL2 on Windows
+
+// FILES NOT COMPILED,SDL WILL NOT WORK UNTIL YOU COMPILE!!!
 
 PPU::PPU(std::vector<uint8_t> &chrROMBuffer)
 {
@@ -490,6 +494,50 @@ void PPU::clock()
 
             uint8_t spritePixel = ((spritePatternHigh[i] >> (7 - fineX)) & 1) << 1 |
                                   ((spritePatternLow[i] >> (7 - fineX)) & 1);
+        }
+    }
+
+    // SPRITE RENDERING
+
+    if (showSprites && cycle >= 1 && cycle <= 256)
+    {
+        uint8_t spritePixel = 0;
+        uint8_t spritePaletteIndex = 0;
+        bool spriteForeground = false;
+
+        spriteZeroRendering = false;
+
+        for (int i = 0; i < spriteCount; i++)
+        {
+            if (spriteXCounter[i] == 0)
+            {
+                uint8_t pixel = ((spriteShiftHigh[i] & 0x80) >> 6) |
+                                ((spriteShiftLow[i] & 0x80) >> 7);
+
+                if (pixel != 0)
+                {
+                    spritePixel = pixel;
+                    spritePaletteIndex = spritePalette[i];
+                    spriteForeground = !spritePriority[i];
+
+                    if (i == 0)
+                        spriteZeroRendering = true;
+                    break;
+                }
+            }
+        }
+        if (cycle < 9 && !showSpritesLeft)
+            spritePixel = 0;
+
+        for (int i = 0; i < spriteCount; i++)
+        {
+            if (spriteXCounter[i] > 0)
+                spriteXCounter[i]--;
+            else
+            {
+                spriteShiftLow[i] <<= 1;
+                spriteShiftHigh[i] <<= 1;
+            }
         }
     }
 }
