@@ -402,11 +402,11 @@ void PPU::clock()
     {
         uint8_t bit = 15 - x;
 
-        uint8_t bgPixel =
+        bgPixel =
             ((bgShiftHigh >> bit) & 1) << 1 |
             ((bgShiftLow >> bit) & 1);
 
-        uint8_t bgPalette =
+        bgPalette =
             ((attrShiftHigh >> bit) & 1) << 1 |
             ((attrShiftLow >> bit) & 1);
 
@@ -539,5 +539,25 @@ void PPU::clock()
                 spriteShiftHigh[i] <<= 1;
             }
         }
+
+        // PRIORITY
+
+        uint8_t finalColor = 0;
+
+        if (bgPixel == 0 && spritePixel == 0)
+            finalColor = 0;
+        else if (bgPixel == 0 && spritePixel > 0)
+            finalColor = 0x10 | (spritePaletteIndex << 2) | spritePixel;
+        else if (bgPixel > 0 && spritePixel == 0)
+            finalColor = (bgPalette << 2) | bgPixel;
+        else
+        {
+            if (spriteForeground)
+                finalColor = 0x10 | (spritePaletteIndex << 2) | spritePixel;
+            else
+                finalColor = (bgPalette << 2) | bgPixel;
+        }
+
+        framebuffer[scanline][cycle - 1] = finalColor;
     }
 }

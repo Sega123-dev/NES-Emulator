@@ -46,6 +46,11 @@ public:
     bool spriteOverflow;
     uint8_t ppuOpenBus;
 
+    // For Background
+
+    uint8_t bgPixel;
+    uint8_t bgPalette;
+
     // Sprite fetch
 
     uint8_t spriteCount;
