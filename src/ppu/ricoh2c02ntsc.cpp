@@ -462,6 +462,9 @@ void PPU::clock()
             uint8_t tileIndex = secondaryOAM[i * 4 + 1];
             uint16_t patternTableAddr;
 
+            if (spriteZeroPossible && spriteZeroRendering && spriteCount == 0)
+                sprite0Hit = true; // Sprite 0 hit
+
             if (secondaryOAM[i * 4 + 2] & 0x80)
                 spriteRow = (spriteHeight - 1) - spriteRow;
 
@@ -559,5 +562,10 @@ void PPU::clock()
         }
 
         framebuffer[scanline][cycle - 1] = finalColor;
+
+        if (spriteZeroRendering && spriteZeroPossible && bgPixel != 0 && spritePixel != 0 && cycle != 0)
+        {
+            sprite0Hit = true;
+        }
     }
 }
