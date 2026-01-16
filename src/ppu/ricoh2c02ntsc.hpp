@@ -50,6 +50,7 @@ public:
 
     uint8_t bgPixel;
     uint8_t bgPalette;
+    uint8_t colorIndex;
 
     // Sprite fetch
 
@@ -68,7 +69,7 @@ public:
     uint8_t spriteShiftLow[8];
     uint8_t spriteShiftHigh[8];
 
-    bool spriteZeroPossible;
+    bool spriteZeroPossible = false;
     bool spriteZeroRendering;
     bool showSpritesLeft;
 

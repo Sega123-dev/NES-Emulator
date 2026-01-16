@@ -410,29 +410,19 @@ void PPU::clock()
             ((attrShiftHigh >> bit) & 1) << 1 |
             ((attrShiftLow >> bit) & 1);
 
-        uint8_t colorIndex =
+        colorIndex =
             bgPixel ? ((bgPalette << 2) | bgPixel) : 0;
-
-        framebuffer[scanline][cycle - 1] = colorIndex;
     }
-    if (scanline == 241 && cycle == 1)
-        vblankFlag = true;
-    cycle++;
-    if (cycle > 340)
-    {
-        cycle = 0;
-        scanline++;
-        if (scanline > 261)
-            scanline = -1;
-    }
-    if (scanline >= 257 && scanline <= 320)
-    {
 
-        for (int i = 0; i < 32; i++)
-        {
-            secondaryOAM[i] = 0;
-        }
+    // OAM PATTERN SCAN
+
+    if (cycle == 65)
+    {
+        memset(secondaryOAM, 0, 32);
         spriteCount = 0;
+    }
+    if (cycle >= 65 && cycle <= 256)
+    {
         for (int i = 0; i < 64; i++)
         {
             uint8_t Ypos = oam[i * 4 + 0];
@@ -453,6 +443,17 @@ void PPU::clock()
                 spriteCount++;
             }
         }
+    }
+
+    // SET VBLANK
+
+    if (scanline == 241 && cycle == 1)
+        vblankFlag = true;
+
+    // SPRITE EVALUATION
+
+    if (cycle >= 256 && cycle <= 320)
+    {
         for (int i = 0; i < spriteCount; i++)
         {
             uint8_t spriteY = secondaryOAM[i * 4 + 0];
@@ -461,9 +462,6 @@ void PPU::clock()
             uint16_t patternTableBase;
             uint8_t tileIndex = secondaryOAM[i * 4 + 1];
             uint16_t patternTableAddr;
-
-            if (spriteZeroPossible && spriteZeroRendering && spriteCount == 0)
-                sprite0Hit = true; // Sprite 0 hit
 
             if (secondaryOAM[i * 4 + 2] & 0x80)
                 spriteRow = (spriteHeight - 1) - spriteRow;
@@ -487,16 +485,6 @@ void PPU::clock()
 
             spritePatternLow[i] = ppuReadRaw(patternTableAddr);
             spritePatternHigh[i] = ppuReadRaw(patternTableAddr + 8);
-
-            int fineX = cycle - Xsprite;
-            if (fineX < 0 || fineX > 7)
-                continue;
-
-            if (secondaryOAM[i * 4 + 2] & 0x40)
-                fineX = 7 - fineX;
-
-            uint8_t spritePixel = ((spritePatternHigh[i] >> (7 - fineX)) & 1) << 1 |
-                                  ((spritePatternLow[i] >> (7 - fineX)) & 1);
         }
     }
 
@@ -508,10 +496,14 @@ void PPU::clock()
         uint8_t spritePaletteIndex = 0;
         bool spriteForeground = false;
 
-        spriteZeroRendering = false;
-
         for (int i = 0; i < spriteCount; i++)
         {
+            spriteShiftLow[i] = spritePatternLow[i];
+            spriteShiftHigh[i] = spritePatternHigh[i];
+            spriteXCounter[i] = secondaryOAM[i * 4 + 3];
+            spritePalette[i] = secondaryOAM[i * 4 + 2] & 0x03;
+            spritePriority[i] = secondaryOAM[i * 4 + 2] & 0x20;
+
             if (spriteXCounter[i] == 0)
             {
                 uint8_t pixel = ((spriteShiftHigh[i] & 0x80) >> 6) |
@@ -545,27 +537,37 @@ void PPU::clock()
 
         // PRIORITY
 
-        uint8_t finalColor = 0;
-
         if (bgPixel == 0 && spritePixel == 0)
-            finalColor = 0;
+            colorIndex = 0;
         else if (bgPixel == 0 && spritePixel > 0)
-            finalColor = 0x10 | (spritePaletteIndex << 2) | spritePixel;
+            colorIndex = 0x10 | (spritePaletteIndex << 2) | spritePixel;
         else if (bgPixel > 0 && spritePixel == 0)
-            finalColor = (bgPalette << 2) | bgPixel;
+            colorIndex = (bgPalette << 2) | bgPixel;
         else
         {
             if (spriteForeground)
-                finalColor = 0x10 | (spritePaletteIndex << 2) | spritePixel;
+                colorIndex = 0x10 | (spritePaletteIndex << 2) | spritePixel;
             else
-                finalColor = (bgPalette << 2) | bgPixel;
+                colorIndex = (bgPalette << 2) | bgPixel;
         }
 
-        framebuffer[scanline][cycle - 1] = finalColor;
+        framebuffer[scanline][cycle - 1] = colorIndex;
 
-        if (spriteZeroRendering && spriteZeroPossible && bgPixel != 0 && spritePixel != 0 && cycle != 0)
+        if (scanline == -1 && cycle == 1)
+            sprite0Hit = false;
+        if (spriteZeroRendering && spriteZeroPossible && bgPixel != 0 && spritePixel != 0 && cycle >= 1 && cycle <= 255 && !(cycle <= 8 && (!showLeftBackground || !showLeftSprites)))
         {
-            sprite0Hit = true;
+            sprite0Hit = true; // Sprite 0 hit
+        }
+
+        // CYCLE INCREMENT
+
+        cycle++;
+        if (cycle > 340)
+        {
+            cycle = 0;
+            scanline++;
+            if (scanline > 261)
+                scanline = -1;
         }
     }
-}
