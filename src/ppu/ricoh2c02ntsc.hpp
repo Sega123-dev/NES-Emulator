@@ -73,6 +73,8 @@ public:
     bool spriteZeroRendering;
     bool showSpritesLeft;
 
+    uint8_t spritePixel;
+
     // Raw reads/writes
 
     uint8_t ppuReadRaw(uint16_t addr);

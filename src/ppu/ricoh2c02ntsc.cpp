@@ -487,12 +487,11 @@ void PPU::clock()
             spritePatternHigh[i] = ppuReadRaw(patternTableAddr + 8);
         }
     }
-
     // SPRITE RENDERING
 
     if (showSprites && cycle >= 1 && cycle <= 256)
     {
-        uint8_t spritePixel = 0;
+        spritePixel = 0;
         uint8_t spritePaletteIndex = 0;
         bool spriteForeground = false;
 
@@ -553,21 +552,80 @@ void PPU::clock()
 
         framebuffer[scanline][cycle - 1] = colorIndex;
 
-        if (scanline == -1 && cycle == 1)
-            sprite0Hit = false;
+        // SPRITE HORIZONTAL FLIP
+
+        uint8_t flipped;
+        spritePixel = 0;
+        for (int i = 0; i < spriteCount; i++)
+        {
+
+            bool hFlip = spriteAttributes[i] & 0x40;
+            bool vFlip = spriteAttributes[i] & 0x80;
+
+            if (hFlip)
+                flipped = 7 - spriteXCounter[i];
+            else
+                flipped = spriteXCounter[i];
+
+            uint8_t spriteY = secondaryOAM[i * 4 + 0];
+            uint8_t spriteRow = scanline - spriteY;
+            uint8_t tileIndex = secondaryOAM[i * 4 + 1];
+            uint16_t patternTableAddr;
+            uint16_t patternTableBase = (PPUCTRL & 0x08) ? 0x1000 : 0x0000;
+
+            if (vFlip)
+                spriteRow = spriteHeight - 1 - spriteRow;
+
+            if (spriteHeight == 8)
+            {
+                patternTableBase = (PPUCTRL & 0x08) ? 0x1000 : 0x0000;
+                patternTableAddr = patternTableBase + tileIndex * 16 + spriteRow;
+            }
+            else
+            {
+                patternTableBase = (tileIndex & 1) ? 0x1000 : 0x0000;
+
+                if (spriteRow < 8)
+                    patternTableAddr = patternTableBase + (tileIndex & 0xFE) * 16 + spriteRow;
+                else
+                    patternTableAddr = patternTableBase + (tileIndex | 0x01) * 16 + (spriteRow - 8);
+            }
+
+            spritePatternLow[i] = ppuReadRaw(patternTableAddr + spriteRow);
+            spritePatternHigh[i] = ppuReadRaw(patternTableAddr + spriteRow + 8);
+
+            uint8_t pixel = ((spriteShiftHigh[i] >> flipped) & 1) << 1 |
+                            ((spriteShiftLow[i] >> flipped) & 1);
+            if (pixel != 0)
+            {
+                spritePixel = pixel;
+                break;
+            }
+        }
+
+        // LEFT EDGE BG
+
+        if (cycle <= 8 && !showLeftBackground && !showLeftSprites)
+            bgPixel = 0;
+        if (cycle <= 8 && !showLeftBackground && !showLeftSprites)
+            spritePixel = 0;
+
         if (spriteZeroRendering && spriteZeroPossible && bgPixel != 0 && spritePixel != 0 && cycle >= 1 && cycle <= 255 && !(cycle <= 8 && (!showLeftBackground || !showLeftSprites)))
         {
             sprite0Hit = true; // Sprite 0 hit
         }
-
-        // CYCLE INCREMENT
-
-        cycle++;
-        if (cycle > 340)
-        {
-            cycle = 0;
-            scanline++;
-            if (scanline > 261)
-                scanline = -1;
-        }
     }
+    // CYCLE INCREMENT
+
+    cycle++;
+    if (cycle > 340)
+    {
+        cycle = 0;
+        scanline++;
+        if (scanline > 261)
+            scanline = -1;
+    }
+}
+////////////////////////////////////////
+// CLOCK FUNCTION AROUND 75% ACCURACY //
+////////////////////////////////////////
