@@ -334,6 +334,9 @@ void PPU::clock()
 
     if (scanline >= -1 && scanline < 240)
     {
+
+        // PRE-RENDER SETS
+
         if (scanline == -1 && cycle == 1)
         {
             vblankFlag = false;
@@ -348,6 +351,9 @@ void PPU::clock()
             attrShiftLow <<= 1;
             attrShiftHigh <<= 1;
         }
+
+        // BACKGROUND SHIFTING
+
         if (renderingEnabled &&
             ((cycle >= 1 && cycle <= 256) || (cycle >= 321 && cycle <= 336)))
         {
@@ -412,6 +418,27 @@ void PPU::clock()
 
         colorIndex =
             bgPixel ? ((bgPalette << 2) | bgPixel) : 0;
+    }
+
+    // SPRITE SHIFTING
+
+    if (scanline >= 0 && scanline < 240)
+    {
+        if (cycle >= 1 && cycle <= 256)
+        {
+            for (int i = 0; i < spriteCount; i++)
+            {
+                if (spriteXCounter[i] > 0)
+                {
+                    spriteXCounter[i]--;
+                }
+                else
+                {
+                    spriteShiftLow[i] <<= 1;
+                    spriteShiftHigh[i] <<= 1;
+                }
+            }
+        }
     }
 
     // OAM PATTERN SCAN
@@ -626,6 +653,6 @@ void PPU::clock()
             scanline = -1;
     }
 }
-////////////////////////////////////////
-// CLOCK FUNCTION AROUND 75% ACCURACY //
-////////////////////////////////////////
+////////////////////////////////////////////
+// CLOCK FUNCTION AROUND 75% ACCURACY GOAL//
+////////////////////////////////////////////
