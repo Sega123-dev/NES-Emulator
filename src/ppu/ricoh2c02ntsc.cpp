@@ -332,6 +332,19 @@ void PPU::clock()
 
     bool renderingEnabled = showBackground || showSprites;
 
+    // ODD FRAMES NTSC SYNC
+
+    if (scanline == -1)
+    {
+        if (cycle == 340 && isOddFrame && showBackground)
+        {
+            cycle++;
+        }
+    }
+
+    if (scanline == 261 && cycle == 340)
+        isOddFrame = !isOddFrame;
+
     if (scanline >= -1 && scanline < 240)
     {
 

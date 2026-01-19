@@ -121,6 +121,10 @@ public:
     uint8_t nextTileLow = 0;
     uint8_t nextTileHigh = 0;
 
+    // NTSC
+
+    bool isOddFrame = true;
+
     // Background shift register helpers
     void loadBackgroundShifters();
 
