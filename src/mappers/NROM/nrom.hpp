@@ -30,5 +30,7 @@ public:
     void ppuWrite(uint16_t addr, uint8_t data) override;
     void cpuWrite(uint16_t addr, uint8_t data) override;
 
+    bool getMirror() override;
+
     uint16_t mirror(uint16_t addr); // $2000-$2FFF
 };

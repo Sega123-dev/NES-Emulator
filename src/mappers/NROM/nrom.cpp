@@ -136,3 +136,15 @@ uint16_t NROM::mirror(uint16_t addr)
     }
     return 0;
 }
+
+bool NROM::getMirror()
+{
+    if (mirroring == HORIZONTAL)
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}

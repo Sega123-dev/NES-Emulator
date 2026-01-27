@@ -141,3 +141,10 @@ void MMC1::ppuWrite(uint16_t addr, uint8_t data)
 
     chr[finalAddr % chr.size()] = data;
 }
+bool MMC1::getMirror()
+{
+    if (mirroring == HORIZONTAL)
+        return true;
+    else
+        return false;
+}
