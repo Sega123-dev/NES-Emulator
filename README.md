@@ -34,3 +34,9 @@ The best comparison to this emulator could be the earliest versions of FCEUX or 
 | VRAM              | 4 KB                            | 4 KB                            |
 | Cartridge Slot    | Supports 300+ mappers           | Supports main mappers, limited subset(NROM,CNROM,UXROM,MMC1,MMC3) |
 | Controllers       | 2 standard controllers + optional accessories (Zapper, etc.) | Controls mapped to keyboard
+
+# Support and versions
+
+- *v0.1* - Unstable and unplayable version.
+
+Emulator currenlty can work only on **Windows** OS.
