@@ -2,7 +2,7 @@
 
 # What is an emulator?
 
-Emulator is a software that mimics the real hardware.This repository is example of an emulator based on a legacy 8-bit console manufactured in 1983 called Nintendo Entertainment System(NES) in which development,various companies worked,mainly Nintendo.Like other emulators,this emulator is also not 100% accurate as real console.In theory the accuracy of this emulator is around 65% if we do not include the pirated and homebrew aspects of this console.With this emulator in theory,you should be able to play around 70% of commerical titles.
+Emulator is a software that mimics the real hardware.This repository is example of an emulator based on a legacy 8-bit console manufactured in 1983 called **Nintendo Entertainment System(NES)** in which development,various companies worked,mainly Nintendo.Like other emulators,this emulator is also not 100% accurate as real console.In theory the accuracy of this emulator is around 65% if we do not include the pirated and homebrew aspects of this console.With this emulator in theory,you should be able to play around 70% of commerical titles.
 The best comparison to this emulator could be the earliest versions of FCEUX or Nestopia emulators.
 
 # What are the components of the NES?
