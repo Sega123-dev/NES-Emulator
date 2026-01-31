@@ -21,3 +21,16 @@ The best comparison to this emulator could be the earliest versions of FCEUX or 
 
 **4KB VRAM memory**
 
+# Comparison to a real NES console
+
+## NES vs NES-Emulator Components
+
+| Component         | Real NES                        | NES-Emulator                     |
+|------------------|---------------------------------|---------------------------------|
+| CPU               | Ricoh 2A03, 151 official opcodes (D flag ignored) | Full official CPU, 149 opcodes, including D-flag handling |
+| PPU (Graphics)    | 100% accurate, full NTSC/PAL quirks | ~75% accuracy, handles most graphics but skips minor timing quirks |
+| APU (Audio)       | 5 channels (Pulse 1+2, Triangle, Noise, DMC) | 2 easiest channels implemented |
+| RAM               | 2 KB                            | 2 KB                            |
+| VRAM              | 4 KB                            | 4 KB                            |
+| Cartridge Slot    | Supports 300+ mappers           | Supports main mappers, limited subset |
+| Controllers       | 2 standard controllers + optional accessories (Zapper, etc.) | 2 controllers implemented; Zapper simulated |
