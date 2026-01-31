@@ -11,7 +11,7 @@ The best comparison to this emulator could be the earliest versions of FCEUX or 
 
 **Address Bus** - plate where all components are wired.It is used for comumnication between all components of the NES using hexadecimal address going up to 16-bit integers.
 
-**Ricoh 2CO2 NTSC/PAL** - Pixel processing unit(primitive graphics card) used for displaying and processing pixels.Depending on the region of the world,it has either NTSC port for NTSC TVs or PAL one It has clock,its 3x faster than CPU and timing sensitive with many quirks.
+**Ricoh 2CO2 NTSC/PAL** - Pixel processing unit(primitive graphics card) used for displaying and processing pixels.Depending on the region of the world,it has either NTSC port for NTSC TVs or PAL one. Its 3x faster than CPU and timing sensitive with many quirks.
 
 **APU** - Audio processing unit that uses 5 channels that process audio samples that get passed to the TV so it can make a sound.The audio channels:Pulse 1+2, Triangle, Noise, DMC;
 
