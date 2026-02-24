@@ -4,7 +4,7 @@
 #include <vector>
 #include <memory>
 #include "../mapper.hpp"
-
+#include "../../bus/bus.hpp"
 class UXROM : public Mapper
 {
 public:
@@ -22,4 +22,6 @@ private:
     uint8_t currentPRGbank = 0;
     uint8_t lastCpuValue = 0;
     uint8_t lastPpuValue = 0;
+
+    void connectUxrom(Bus *b);
 };

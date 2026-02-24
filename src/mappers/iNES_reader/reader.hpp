@@ -20,3 +20,5 @@ extern bool SRAM;
 extern bool fourScreenMirroring;
 extern std::vector<uint8_t> PRG_ROM;
 extern std::vector<uint8_t> CHR_ROM;
+
+void connectReader(Bus *b);

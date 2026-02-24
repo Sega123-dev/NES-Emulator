@@ -9,13 +9,13 @@
 
 // FILES NOT COMPILED,SDL WILL NOT WORK UNTIL YOU COMPILE!!!
 Mapper *mapper;
-
+Bus *bus = nullptr;
 enum Mirror
 {
     HORIZONTAL,
     VERTICAL,
-    ONESCREENLOW,
-    ONESCREENHIGH
+    ONE_SCREEN_LOW,
+    ONE_SCREEN_HIGH
 };
 
 PPU::PPU(std::vector<uint8_t> &chrROMBuffer)
@@ -674,6 +674,10 @@ void PPU::clock()
         if (scanline > 261)
             scanline = -1;
     }
+}
+void PPU::connectPpu(Bus *b)
+{
+    bus = b;
 }
 ////////////////////////////////////////////
 // CLOCK FUNCTION AROUND 75% ACCURACY GOAL//

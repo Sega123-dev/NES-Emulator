@@ -3,6 +3,8 @@
 #include <vector>
 #include "uxrom.hpp"
 
+Bus *bus = nullptr;
+
 void UXROM::reset()
 {
     currentPRGbank = 0;
@@ -57,4 +59,9 @@ uint8_t UXROM::cpuRead(uint16_t addr)
 void UXROM::ppuWrite(uint16_t addr, uint8_t data)
 {
     // No catching right now
+}
+
+void UXROM::connectUxrom(Bus *b)
+{
+    bus = b;
 }

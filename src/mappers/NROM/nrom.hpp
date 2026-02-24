@@ -31,6 +31,6 @@ public:
     void cpuWrite(uint16_t addr, uint8_t data) override;
 
     Mirror getMirror() override;
-
+    void connectNrom(Bus *b);
     uint16_t mirror(uint16_t addr); // $2000-$2FFF
 };

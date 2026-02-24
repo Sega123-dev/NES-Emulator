@@ -4,9 +4,10 @@
 #include <vector>
 #include "nrom.hpp"
 #include "../../ppu/ricoh2c02ntsc.hpp"
+#include "../../bus/bus.hpp"
 
 PPU *ppuBus;
-
+Bus *bus = nullptr;
 NROM::NROM(const std::vector<uint8_t> &prgData, const std::vector<uint8_t> &chrData)
 {
     prg = prgData;
@@ -147,4 +148,8 @@ Mirror NROM::getMirror()
     {
         VERTICAL;
     }
+}
+void NROM::connectNrom(Bus *b)
+{
+    bus = b;
 }

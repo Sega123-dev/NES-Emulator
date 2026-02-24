@@ -3,7 +3,7 @@
 #include <iostream>
 #include <vector>
 #include "../mappers/mapper.hpp"
-
+#include "../../bus/bus.hpp"
 class PPU
 {
 public:
@@ -138,4 +138,6 @@ public:
 
     uint16_t getLastAddress();
     uint16_t lastPPUAddress;
+
+    void connectPpu(Bus *b);
 };

@@ -5,10 +5,14 @@
 #include "../MMC1/mmc1.hpp"
 #include "../MMC3/mmc3.hpp"
 
+#include "../../bus/bus.hpp"
+
 #include <iostream>
 #include <cstdint>
 #include <fstream>
 #include <vector>
+
+Bus *bus = nullptr;
 
 uint8_t header[16];
 int prgRomSize;
@@ -110,4 +114,8 @@ Mapper *chooseMapper()
         std::cerr << "NEScape does not support mapper " << mapperID << '\n';
         return nullptr;
     }
+};
+void connectReader(Bus *b)
+{
+    bus = b;
 }
