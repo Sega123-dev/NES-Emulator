@@ -137,14 +137,14 @@ uint16_t NROM::mirror(uint16_t addr)
     return 0;
 }
 
-bool NROM::getMirror()
+Mirror NROM::getMirror()
 {
     if (mirroring == HORIZONTAL)
     {
-        return true;
+        HORIZONTAL;
     }
     else
     {
-        return false;
+        VERTICAL;
     }
 }

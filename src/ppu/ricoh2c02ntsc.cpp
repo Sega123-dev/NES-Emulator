@@ -8,6 +8,15 @@
 #undef main // Important for MinGW/SDL2 on Windows
 
 // FILES NOT COMPILED,SDL WILL NOT WORK UNTIL YOU COMPILE!!!
+Mapper *mapper;
+
+enum Mirror
+{
+    HORIZONTAL,
+    VERTICAL,
+    ONESCREENLOW,
+    ONESCREENHIGH
+};
 
 PPU::PPU(std::vector<uint8_t> &chrROMBuffer)
 {
@@ -33,7 +42,7 @@ PPU::PPU(std::vector<uint8_t> &chrROMBuffer)
     scanline = -1;
     cycle = 0;
 
-    horizontalMirroring = false; // Pull exact mirroring behavior from a mapper,this variable is a placeholder
+    Mirror mirroring = mapper->getMirror();
 }
 
 // HELPERS

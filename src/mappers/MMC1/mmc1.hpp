@@ -20,7 +20,7 @@ public:
     void cpuWrite(uint16_t addr, uint8_t data) override;
     void reset();
 
-    bool getMirror();
+    Mirror getMirror() override;
 
 private:
     std::vector<uint8_t> prg;
