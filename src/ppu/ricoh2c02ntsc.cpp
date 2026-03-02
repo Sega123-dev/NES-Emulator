@@ -675,7 +675,7 @@ void PPU::clock()
             scanline = -1;
     }
 }
-void PPU::connectPpu(Bus *b)
+void PPU::connectBus(Bus *b)
 {
     bus = b;
 }

@@ -13,6 +13,12 @@ int main()
     nes.mmc3 = &mmc3;
     mmc3.connectBus(&nes);
     nes.cpu.connectBus(&nes);
-
+    nes.ppu->connectBus(&nes);
     nes.cpu.reset();
+
+    while (true)
+    {
+        nes.cpu.clock();
+        nes.ppu->clock();
+    }
 }

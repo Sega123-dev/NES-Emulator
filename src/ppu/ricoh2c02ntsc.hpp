@@ -139,5 +139,5 @@ public:
     uint16_t getLastAddress();
     uint16_t lastPPUAddress;
 
-    void connectPpu(Bus *b);
+    void connectBus(Bus *b);
 };
