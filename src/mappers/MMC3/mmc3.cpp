@@ -288,6 +288,17 @@ void MMC3::ppuWrite(uint16_t addr, uint8_t data)
         ppu->paletteRAM[palAddr] = data;
     }
 }
+Mirror MMC3::getMirror()
+{
+    if (mirrorHorizontal)
+    {
+        HORIZONTAL;
+    }
+    else
+    {
+        VERTICAL;
+    }
+}
 void MMC3::connectBus(Bus *b)
 {
     bus = b;

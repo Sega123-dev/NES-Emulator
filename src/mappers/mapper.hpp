@@ -3,6 +3,15 @@
 #include <cstdint>
 #include <vector>
 #include <memory>
+
+enum Mirror
+{
+    HORIZONTAL,
+    VERTICAL,
+    ONESCREENLOW,
+    ONESCREENHIGH
+};
+
 class Mapper
 {
 public:
@@ -10,6 +19,8 @@ public:
     virtual uint8_t ppuRead(uint16_t addr) = 0;
     virtual void cpuWrite(uint16_t addr, uint8_t data) = 0;
     virtual void ppuWrite(uint16_t addr, uint8_t data) = 0;
+
+    virtual Mirror getMirror() = 0;
 
     ~Mapper() = default;
 };

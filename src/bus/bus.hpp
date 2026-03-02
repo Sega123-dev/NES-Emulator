@@ -1,7 +1,16 @@
 #pragma once
 #include "../cpu/6502ricoh.hpp"
+#include "../ppu/ricoh2c02ntsc.hpp"
+#include "../mappers/mapper.hpp"
+#include "../mappers/CNROM/cnrom.hpp"
+#include "../mappers/iNES_reader/reader.hpp"
+#include "../mappers/MMC1/mmc1.hpp"
+#include "../mappers/MMC3/mmc3.hpp"
+#include "../mappers/NROM/nrom.hpp"
+#include "../mappers/UxROM/uxrom.hpp"
+
 #include <cstdint>
-class MMC3;
+
 class Bus
 {
 public:
@@ -11,5 +20,12 @@ public:
 
     CPU cpu;
     MMC3 *mmc3 = nullptr;
+    PPU *ppu = nullptr;
+    Mapper *mapper = nullptr;
+    CNROM *cnrom = nullptr;
+    MMC1 *mmc1 = nullptr;
+    NROM *nrom = nullptr;
+    UXROM *uxrom = nullptr;
+
     uint8_t ram[2048];
 };

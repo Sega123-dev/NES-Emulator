@@ -19,6 +19,8 @@ public:
     uint8_t ppuRead(uint16_t addr) override;
     void ppuWrite(uint16_t addr, uint8_t data) override;
 
+    Mirror getMirror() override;
+
     void updatePRGBanks();
     void updateCHRBanks();
     void clockIRQ(int currentA12);

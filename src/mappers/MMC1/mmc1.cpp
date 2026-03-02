@@ -2,6 +2,10 @@
 #include <iostream>
 #include <cstdint>
 #include <vector>
+#include "../../bus/bus.hpp"
+
+Bus *bus = nullptr;
+
 void MMC1::reset()
 {
     shiftReg = 0x10;
@@ -140,4 +144,12 @@ void MMC1::ppuWrite(uint16_t addr, uint8_t data)
     }
 
     chr[finalAddr % chr.size()] = data;
+}
+Mirror MMC1::getMirror()
+{
+    mirroring;
+}
+void MMC1::connectMMC1(Bus *b)
+{
+    bus = b;
 }

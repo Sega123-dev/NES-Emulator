@@ -3,6 +3,9 @@
 #include <cstdint>
 #include <vector>
 #include "../mapper.hpp"
+
+#include "../../bus/bus.hpp"
+
 enum Mirroring
 {
     VERTICAL,
@@ -20,6 +23,8 @@ public:
     void cpuWrite(uint16_t addr, uint8_t data) override;
     void reset();
 
+    Mirror getMirror() override;
+
 private:
     std::vector<uint8_t> prg;
     std::vector<uint8_t> chr;
@@ -35,4 +40,6 @@ private:
 
     uint8_t lastCpuValue;
     uint8_t lastPpuValue;
+
+    void connectMMC1(Bus *b);
 };

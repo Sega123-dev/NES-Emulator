@@ -2,6 +2,9 @@
 #include <cstdint>
 #include <vector>
 #include "cnrom.hpp"
+#include "../../bus/bus.hpp"
+
+Bus *bus = nullptr;
 
 void CNROM::reset()
 {
@@ -59,4 +62,8 @@ uint8_t CNROM::ppuRead(uint16_t addr)
 void CNROM::ppuWrite(uint16_t addr, uint8_t data)
 {
     // No RAM
+}
+void CNROM::connectBus(Bus *b)
+{
+    bus = b;
 }
