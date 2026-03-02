@@ -101,9 +101,9 @@ Mapper *chooseMapper()
     switch (mapperID)
     {
     case 0:
-        return new NROM(PRG_ROM, CHR_ROM);
+        return new NROM(PRG_ROM, CHR_ROM, verticalMirroring);
     case 1:
-        return new MMC1(PRG_ROM, CHR_ROM);
+        return new MMC1(PRG_ROM, CHR_ROM, fourScreenMirroring, verticalMirroring);
     case 2:
         return new UXROM(PRG_ROM, CHR_ROM);
     case 3:

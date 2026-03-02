@@ -16,7 +16,7 @@ enum Mirroring
 class MMC1 : public Mapper
 {
 public:
-    MMC1(const std::vector<uint8_t> &prgData, const std::vector<uint8_t> &chrData);
+    MMC1(const std::vector<uint8_t> &prgData, const std::vector<uint8_t> &chrData, const bool &lowHighMirrorPort, const bool &mirrorPortVertical);
     uint8_t cpuRead(uint16_t addr) override;
     uint8_t ppuRead(uint16_t addr) override;
     void ppuWrite(uint16_t addr, uint8_t data) override;

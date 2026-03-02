@@ -21,10 +21,19 @@ void MMC3::reset()
     irqReloadFlag = false;
     prevA12 = (ppu->getLastAddress() & 0x1000) >> 12;
 }
-MMC3::MMC3(std::vector<uint8_t> &prgData, std::vector<uint8_t> &chrData)
+MMC3::MMC3(std::vector<uint8_t> &prgData, std::vector<uint8_t> &chrData, const bool &vertMirrorPort)
 {
     prg = prgData;
     chr = chrData;
+
+    if (!vertMirrorPort)
+    {
+        mirrorHorizontal = true;
+    }
+    else
+    {
+        mirrorHorizontal = false;
+    }
 
     wram.resize(0x2000, 0);
     reset();

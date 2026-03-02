@@ -24,7 +24,7 @@ public:
     bool prg16kb;
     bool chr8kb; // Checks if it's either CHR-RAM(0kb) or CHR-ROM(8kb)
 
-    NROM(const std::vector<uint8_t> &prgData, const std::vector<uint8_t> &chrData);
+    NROM(const std::vector<uint8_t> &prgData, const std::vector<uint8_t> &chrData, const bool &mirrorPortVertical);
     uint8_t cpuRead(uint16_t addr) override;
     uint8_t ppuRead(uint16_t addr) override;
     void ppuWrite(uint16_t addr, uint8_t data) override;

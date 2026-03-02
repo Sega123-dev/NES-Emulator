@@ -11,7 +11,7 @@ class MMC3 : public Mapper
 public:
     Bus *bus = nullptr;
     MMC3() = default;
-    MMC3(std::vector<uint8_t> &prgData, std::vector<uint8_t> &chrData);
+    MMC3(std::vector<uint8_t> &prgData, std::vector<uint8_t> &chrData, const bool &vertMirrorPort);
 
     uint8_t cpuRead(uint16_t addr) override;
     void cpuWrite(uint16_t addr, uint8_t data) override;

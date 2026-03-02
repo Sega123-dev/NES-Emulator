@@ -8,7 +8,7 @@
 
 PPU *ppuBus;
 Bus *bus = nullptr;
-NROM::NROM(const std::vector<uint8_t> &prgData, const std::vector<uint8_t> &chrData)
+NROM::NROM(const std::vector<uint8_t> &prgData, const std::vector<uint8_t> &chrData, const bool &mirrorPortVertical)
 {
     prg = prgData;
     chr = chrData;
@@ -27,6 +27,10 @@ NROM::NROM(const std::vector<uint8_t> &prgData, const std::vector<uint8_t> &chrD
         chr.resize(0x2000);
 
     prgRam.resize(0x2000);
+    if (!mirrorPortVertical)
+        mirroring = HORIZONTAL;
+    else
+        mirroring = VERTICAL;
 }
 
 uint8_t NROM::cpuRead(uint16_t addr)

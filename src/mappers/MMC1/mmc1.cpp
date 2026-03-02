@@ -17,10 +17,20 @@ void MMC1::reset()
 
     mirroring = Mirroring::HORIZONTAL;
 }
-MMC1::MMC1(const std::vector<uint8_t> &prgData, const std::vector<uint8_t> &chrData)
+MMC1::MMC1(const std::vector<uint8_t> &prgData, const std::vector<uint8_t> &chrData, const bool &lowHighMirrorPort, const bool &mirrorPortVertical)
 {
     prg = prgData;
     chr = chrData;
+
+    if (!verticalMirroring)
+        mirroring = HORIZONTAL;
+    else
+        mirroring = VERTICAL;
+
+    if (!lowHighMirrorPort)
+        mirroring = HORIZONTAL;
+    else
+        mirroring = VERTICAL;
 
     reset();
 };
