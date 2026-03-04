@@ -91,7 +91,7 @@ CPU::CPU() : bus(nullptr)
     table[0x6C] = {"JMP", &CPU::jmpIndirect, AddressingMode::INDIRECT, 5};
 
     table[0x20] = {"JSR", &CPU::jsrAbsolute, AddressingMode::ABSOLUTE, 6};
-    table[0x60] = {"RTS", &CPU::rts, AddressingMode::IMPLIED};
+    table[0x60] = {"RTS", &CPU::rts, AddressingMode::IMPLIED, 6};
 
     table[0x69] = {"ADC", &CPU::adcImmediate, AddressingMode::IMMEDIATE, 2};
     table[0x65] = {"ADC", &CPU::adcZeroPage, AddressingMode::ZERO_PAGE, 3};
@@ -128,15 +128,6 @@ CPU::CPU() : bus(nullptr)
     table[0x39] = {"AND", &CPU::andAbsoluteY, AddressingMode::ABSOLUTE_Y, 4};
     table[0x21] = {"AND", &CPU::andIndexedIndirect, AddressingMode::INDEXED_INDIRECT, 6};
     table[0x31] = {"AND", &CPU::andIndirectIndexed, AddressingMode::INDIRECT_INDEXED, 5};
-
-    table[0x49] = {"EOR", &CPU::eorImmediate, AddressingMode::IMMEDIATE, 2};
-    table[0x45] = {"EOR", &CPU::eorZeroPage, AddressingMode::ZERO_PAGE, 3};
-    table[0x55] = {"EOR", &CPU::eorZeroPageX, AddressingMode::ZERO_PAGE_X, 4};
-    table[0x4D] = {"EOR", &CPU::eorAbsolute, AddressingMode::ABSOLUTE, 4};
-    table[0x5D] = {"EOR", &CPU::eorAbsoluteX, AddressingMode::ABSOLUTE_X, 4};
-    table[0x59] = {"EOR", &CPU::eorAbsoluteY, AddressingMode::ABSOLUTE_Y, 4};
-    table[0x41] = {"EOR", &CPU::eorIndexedIndirect, AddressingMode::INDEXED_INDIRECT, 6};
-    table[0x51] = {"EOR", &CPU::eorIndirectIndexed, AddressingMode::INDIRECT_INDEXED, 5};
 
     table[0x49] = {"EOR", &CPU::eorImmediate, AddressingMode::IMMEDIATE, 2};
     table[0x45] = {"EOR", &CPU::eorZeroPage, AddressingMode::ZERO_PAGE, 3};
@@ -252,17 +243,15 @@ void CPU::clearIRQ()
 
 void CPU::reset()
 {
-    bus = nullptr;
-    dataBus = 0;
-    A = 0;
-    X = 0;
-    Y = 0;
+
+    A = X = Y = 0;
     P = 0x24;
-    pc = 0;
     sp = 0xFD;
-    cycles = 0;
-    opState = 0;
-    NMI = IRQ = RESET = false;
+    cycles = 7;
+
+    uint8_t low = bus->read(0xFFFC);
+    uint8_t high = bus->read(0xFFFD);
+    pc = (high << 8) | low;
 }
 void CPU::brk()
 {
