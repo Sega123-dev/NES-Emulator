@@ -5,11 +5,13 @@
 #include "ricoh2c02ntsc.hpp"
 #include "../mappers/iNES_reader/reader.hpp"
 #include "../mappers/mapper.hpp"
+#include "../cpu/6502ricoh.hpp"
 #undef main // Important for MinGW/SDL2 on Windows
 
 // FILES NOT COMPILED,SDL WILL NOT WORK UNTIL YOU COMPILE!!!
 Mapper *mapper;
 Bus *bus = nullptr;
+CPU *cpu;
 enum Mirror
 {
     HORIZONTAL,
@@ -497,7 +499,11 @@ void PPU::clock()
     // SET VBLANK
 
     if (scanline == 241 && cycle == 1)
+    {
         vblankFlag = true;
+        if (vblankFlag && nmiOutput)
+            cpu->NMI = true;
+    }
 
     // SPRITE EVALUATION
 
