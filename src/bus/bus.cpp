@@ -24,8 +24,10 @@ void Bus::write(uint16_t addr, uint8_t data)
             ppu->write2007(data);
             break;
         }
-
-        ppu->ppuWriteRaw(addr & 0x0007, data);
+    }
+    else if (addr >= 0x6000)
+    {
+        mapper->cpuWrite(addr, data);
     }
 }
 uint8_t Bus::read(uint16_t addr)
@@ -44,6 +46,10 @@ uint8_t Bus::read(uint16_t addr)
             break;
         }
         return ppu->ppuReadRaw(addr & 0x7);
+    }
+    else if (addr >= 0x6000)
+    {
+        return mapper->cpuRead(addr);
     }
     return 0x00;
 }

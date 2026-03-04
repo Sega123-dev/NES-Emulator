@@ -109,7 +109,7 @@ Mapper *chooseMapper()
     case 3:
         return new CNROM(PRG_ROM, CHR_ROM);
     case 4:
-        return new MMC3(PRG_ROM, CHR_ROM);
+        return new MMC3(PRG_ROM, CHR_ROM, verticalMirroring);
     default:
         std::cerr << "NEScape does not support mapper " << mapperID << '\n';
         return nullptr;
