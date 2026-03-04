@@ -190,6 +190,23 @@ CPU::CPU() : bus(nullptr)
 };
 // HELPERS
 
+void CPU::pushPC()
+{
+    bus->write(0x0100 + sp, (pc >> 8) & 0xFF); // high byte
+    sp--;
+    bus->write(0x0100 + sp, pc & 0xFF); // low byte
+    sp--;
+}
+void CPU::pushStatus(bool breakFlag = false)
+{
+    uint8_t flags = P;
+    flags &= ~0x10;
+    if (breakFlag)
+        flags |= 0x10;
+    flags |= 0x20;
+    bus->write(0x0100 + sp, flags);
+    sp--;
+}
 void CPU::setNZ(uint8_t reg)
 {
     if ((reg & 0x80) != 0)
@@ -2069,6 +2086,15 @@ void CPU::clock()
         cycles = instr.cycles;
     }
     cycles--;
+
+    if (NMI)
+    {
+        NMI = false;
+        pushPC();
+        pushStatus();
+        pc = bus->read(0xFFFA);
+        cycles += 7;
+    }
 }
 void CPU::connectBus(Bus *b)
 {

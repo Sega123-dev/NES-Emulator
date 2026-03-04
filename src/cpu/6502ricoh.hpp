@@ -235,4 +235,6 @@ public:
     void compare(uint8_t reg, uint8_t value);
     void setIRQ();
     void clearIRQ();
+    void pushPC();
+    void pushStatus(bool breakFlag = false);
 };
