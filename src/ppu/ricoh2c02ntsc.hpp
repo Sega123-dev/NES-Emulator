@@ -109,7 +109,7 @@ public:
     // Read $2007
     uint16_t ppuDataBuffer;
 
-    uint8_t framebuffer[240][256]; // Screen
+    Color framebuffer[240][256]; // Screen buffer
 
     uint16_t bgShiftLow = 0;
     uint16_t bgShiftHigh = 0;
