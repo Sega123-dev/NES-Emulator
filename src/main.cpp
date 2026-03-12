@@ -3,6 +3,7 @@
 #include "mappers/MMC3/mmc3.hpp"
 #include "mappers/iNES_reader/reader.hpp"
 #include <iostream>
+#include <SDL.h>
 
 int main()
 {
@@ -18,7 +19,14 @@ int main()
 
     while (true)
     {
-        nes.cpu.clock();
-        nes.ppu->clock();
+        for (int i = 0; i < 29780; i++)
+        {
+            nes.cpu.clock();
+            nes.ppu->clock();
+            nes.ppu->clock();
+            nes.ppu->clock();
+        }
+
+        nes.ppu->drawFrame();
     }
 }

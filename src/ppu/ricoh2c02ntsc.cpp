@@ -738,6 +738,31 @@ void PPU::clock()
             sprite0Hit = true; // Sprite 0 hit
         }
     }
+
+    // SCREEN
+
+    SDL_Window *window = nullptr;
+    SDL_Renderer *renderer = nullptr;
+    SDL_Texture *texture = nullptr;
+
+    SDL_Init(SDL_INIT_VIDEO);
+
+    window = SDL_CreateWindow(
+        "NEScape",
+        SDL_WINDOWPOS_CENTERED,
+        SDL_WINDOWPOS_CENTERED,
+        256 * 3,
+        240 * 3,
+        0);
+
+    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+
+    texture = SDL_CreateTexture(
+        renderer,
+        SDL_PIXELFORMAT_RGB24,
+        SDL_TEXTUREACCESS_STREAMING,
+        256,
+        240);
     // CYCLE INCREMENT
 
     cycle++;
@@ -747,7 +772,36 @@ void PPU::clock()
         scanline++;
         if (scanline > 261)
             scanline = -1;
-    }
+    };
+}
+void PPU::drawFrame()
+{
+
+    // texture conversion
+
+    uint8_t pixels[256 * 240 * 3];
+
+    for (int y = 0; y < 240; y++)
+    {
+        for (int x = 0; x < 256; x++)
+        {
+            Color c = framebuffer[y][x];
+
+            int i = (y * 256 + x) * 3;
+
+            pixels[i] = c.r;
+            pixels[i + 1] = c.g;
+            pixels[i + 2] = c.b;
+        }
+    };
+
+    // passing the texture to GPU
+
+    SDL_UpdateTexture(texture, NULL, pixels, 256 * 3);
+
+    SDL_RenderClear(renderer);
+    SDL_RenderCopy(renderer, texture, NULL, NULL);
+    SDL_RenderPresent(renderer);
 }
 void PPU::connectBus(Bus *b)
 {

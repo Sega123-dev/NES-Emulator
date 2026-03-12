@@ -140,4 +140,9 @@ public:
     uint16_t lastPPUAddress;
 
     void connectBus(Bus *b);
+    void drawFrame();
+
+    SDL_Window *window = nullptr;
+    SDL_Renderer *renderer = nullptr;
+    SDL_Texture *texture = nullptr;
 };
